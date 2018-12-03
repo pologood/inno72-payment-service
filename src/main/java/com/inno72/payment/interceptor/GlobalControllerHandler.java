@@ -20,18 +20,18 @@ import com.inno72.payment.common.TransException;
 /**
  * 全局异常处理
  */
-@SuppressWarnings("rawtypes")
 @ControllerAdvice
 @ResponseBody
-public class GlobalControllerHandler implements ResponseBodyAdvice<Result> {
+public class GlobalControllerHandler implements ResponseBodyAdvice<Object> {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
+	
+	
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(Exception.class)
-	public Result handleServiceException(Exception ex) {
+	public Result<?> handleServiceException(Exception ex) {
 		
-		Result result = new Result();
+		Result<Void> result = new Result<Void>();
 		if(ex instanceof TransException) {
 			result.setCode(((TransException)ex).getRet());
 			result.setMsg(((TransException)ex).getMsg());
@@ -45,17 +45,22 @@ public class GlobalControllerHandler implements ResponseBodyAdvice<Result> {
 		return result;
 	}
 
+	
+	@Override
+	@SuppressWarnings("rawtypes")
 	public boolean supports(MethodParameter returnType, Class converterType) {
 		return true;
 	}
-
-	public Result beforeBodyWrite(Result body, MethodParameter returnType, MediaType selectedContentType,
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
 		
 		String out = null;
-		if(body != null)
-			out = String.format("{code:%s, msg:%s, data:%s}", body.getCode(), body.getMsg(), body.getData());
+		if(body != null && body instanceof Result)
+			out = String.format("{code:%s, msg:%s, data:%s}", ((Result) body).getCode(), ((Result) body).getMsg(), ((Result) body).getData());
 		
 		logger.info(String.format("http rsp: %s", out));
 		

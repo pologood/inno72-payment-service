@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.inno72.common.Result;
 import com.inno72.payment.common.ErrorCode;
@@ -37,6 +38,7 @@ public class PaymentController {
 	
 	
 	@RequestMapping("/queryBillInfo")
+	@ResponseBody
     public  Result<RspQueryBillBean> queryBillInfo(ReqQueryBillBean reqBean) throws TransException {
 
 		return billService.queryBill(reqBean);
@@ -44,7 +46,8 @@ public class PaymentController {
     }
 	
 	@RequestMapping("/create")
-	public Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
+	@ResponseBody
+	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
 		
 		if(StringUtils.isBlank(reqBean.getSpId())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spId"));
