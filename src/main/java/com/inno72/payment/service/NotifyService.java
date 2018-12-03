@@ -120,8 +120,9 @@ public class NotifyService {
 		logDaoBean.setBillId(repBean.getBillId());
 		logDaoBean.setBuyerId("");
 		logDaoBean.setIp(repBean.getClientIp());
-		logDaoBean.setMessage(repBean.getRspMsg());
+		logDaoBean.setMessage(repBean.getNotifyParam());
 		logDaoBean.setOutTradeNo(billInfoBean.getOutTradeNo());
+		logDaoBean.setTerminalType(billInfoBean.getTerminalType());
 		logDaoBean.setSpId(billInfoBean.getSpId());
 		logDaoBean.setIsRefund(0);
 		logDaoBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);

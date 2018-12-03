@@ -3,6 +3,8 @@ package com.inno72.payment.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.alibaba.fastjson.JSON;
+import com.inno72.common.Result;
 import com.inno72.payment.common.Constants;
+import com.inno72.payment.common.TransException;
+import com.inno72.payment.dto.ReqNotifyBean;
+import com.inno72.payment.service.NotifyService;
 import com.inno72.payment.service.VerifySignAlipayService;
 import com.inno72.payment.service.VerifySignWechatService;
 import com.inno72.payment.utils.wechat.WechatXmlParse;
@@ -34,15 +41,17 @@ public class NotifyController {
 	
 	@Autowired
 	private VerifySignAlipayService verifySignAlipayService;
+	
+	@Autowired
+	private NotifyService notifyService;
 
 	
 	
 	@RequestMapping("/alipay/{spId}")
 	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) throws IOException {
 		
-		logger.info("alipay notify:" + req.getRequestURI());
-		if(StringUtils.isNoneBlank(spId)) {
-			logger.info("alipay spid is blank");
+		if(StringUtils.isBlank(spId)) {
+			logger.info("spid is blank");
 			rsp.sendError(401);
 			return;
 		}
@@ -54,19 +63,57 @@ public class NotifyController {
 			params.put(name, req.getParameter(name));
 		}
 			
-		if(verifySignAlipayService.verifySign(spId, Constants.SOURCE_FLAG_IGNORE_PLATFORM, params)) {
+		if(!verifySignAlipayService.verifySign(spId, Constants.SOURCE_FLAG_IGNORE_PLATFORM, params)) {
 			rsp.sendError(401);
 			return;
 		}
 		
-		rsp.sendError(401);
+		if(!"TRADE_SUCCESS".equals(req.getParameter("trade_status"))) {
+			rsp.getOutputStream().write("success".getBytes());
+			rsp.getOutputStream().flush();
+			return;
+		}
 		
-//		ReqNotifyBean reqNotifyBean = new ReqNotifyBean();
-//		
-//		
-//		notifyService.handleNotification();
+		ReqNotifyBean reqNotifyBean = new ReqNotifyBean();
 		
+		SimpleDateFormat ds=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				
+		try {
+			
+			reqNotifyBean.setBillId(Long.parseLong(req.getParameter("out_trade_no")));
+			reqNotifyBean.setClientIp(req.getRemoteAddr());
+			reqNotifyBean.setNotifyId(req.getParameter("notify_id"));
+			reqNotifyBean.setNotifyTime(ds.parse(req.getParameter("notify_time")).getTime());
+			reqNotifyBean.setRspCode("00");
+			reqNotifyBean.setTradeNo(req.getParameter("trade_no"));
+			reqNotifyBean.setRspMsg("ok");
+			reqNotifyBean.setTotalFee(new BigDecimal(req.getParameter("total_amount")).multiply(new BigDecimal(100)).longValue());
+			reqNotifyBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);
+			reqNotifyBean.setNotifyId(req.getParameter("notify_id"));
+			reqNotifyBean.setUpdateTime(System.currentTimeMillis());
+			reqNotifyBean.setNotifyParam(JSON.toJSONString(params));
+			
+		} catch (Exception e){
+			logger.error(e.getMessage(), e);
+			rsp.sendError(401);
+			return;
+		}
 		
+		try {
+			Result<Void> res = notifyService.handleNotification(reqNotifyBean);
+			if(res.getCode() != Constants.RSP_RET_OK) {
+				rsp.sendError(401);
+				return;
+			}else {
+				logger.info("alipy notify success!!!");
+				rsp.getOutputStream().write("success".getBytes());
+				rsp.getOutputStream().flush();
+				return;
+			}
+		} catch (TransException e) {
+			logger.error(e.getMessage(), e);
+			rsp.sendError(401);
+		}
 	}
 	
 	@RequestMapping("/wechat/native/{spId}")
@@ -74,8 +121,8 @@ public class NotifyController {
 		
 		try {
 			
-			if(StringUtils.isNoneBlank(spId)) {
-				logger.info("alipay spid is blank");
+			if(StringUtils.isBlank(spId)) {
+				logger.info("spid is blank");
 				rsp.sendError(401);
 				return;
 			}

@@ -22,6 +22,8 @@ public class ReqNotifyBean {
 	
 	private long updateTime;
 	
+	private String notifyParam;
+	
 	public long getBillId() {
 		return billId;
 	}
@@ -78,8 +80,6 @@ public class ReqNotifyBean {
 		this.updateTime = updateTime;
 	}
 
-	
-
 	public String getRspCode() {
 		return rspCode;
 	}
@@ -104,6 +104,15 @@ public class ReqNotifyBean {
 		this.clientIp = clientIp;
 	}
 
+	public String getNotifyParam() {
+		return notifyParam;
+	}
+
+	public void setNotifyParam(String notifyParam) {
+		this.notifyParam = notifyParam;
+	}
+	
+	
 	
 	
 }
