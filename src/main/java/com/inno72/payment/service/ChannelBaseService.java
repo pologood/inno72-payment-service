@@ -1,9 +1,9 @@
 package com.inno72.payment.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 import com.inno72.payment.common.Constants;
 import com.inno72.payment.common.ErrorCode;
@@ -58,13 +58,18 @@ public abstract class ChannelBaseService implements ChannelService{
 			PaySpInfoDaoBean spInfo,
 			String prepayId,
 			long updateTime,
+			String remoteIp,
 			ReqCreateBillBean reqBean){
 		
 		PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
 		logDaoBean.setBillId(payId);
 		logDaoBean.setBuyerId("");
-		logDaoBean.setIp(reqBean.getClientIp());
-		logDaoBean.setMessage("create bill");
+		logDaoBean.setIp(remoteIp);
+		if(StringUtils.isNotBlank(reqBean.getClientIp())) {
+			logDaoBean.setMessage("create bill client ip:" + reqBean.getClientIp());
+		}else {
+			logDaoBean.setMessage("create bill");
+		}
 		logDaoBean.setOutTradeNo(reqBean.getOutTradeNo());
 		logDaoBean.setSpId(reqBean.getSpId());
 		logDaoBean.setIsRefund(0);

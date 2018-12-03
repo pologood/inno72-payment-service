@@ -1,5 +1,6 @@
 package com.inno72.payment.controller;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,7 +42,7 @@ public class PaymentController {
     }
 	
 	@RequestMapping("/create")
-	public Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean) throws TransException {
+	public Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
 		
 		if(StringUtils.isBlank(reqBean.getSpId())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spId"));
@@ -58,7 +59,7 @@ public class PaymentController {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "thirdPartnerInfo not found"));
 		}
 		
-		return channelFactoryService.getChannel(reqBean.getType()).createBill(idWorker.nextId(), spInfo, thirdPartnerInfo, reqBean);
+		return channelFactoryService.getChannel(reqBean.getType()).createBill(idWorker.nextId(), req.getRemoteAddr(), spInfo, thirdPartnerInfo, reqBean);
 		
 	}
 

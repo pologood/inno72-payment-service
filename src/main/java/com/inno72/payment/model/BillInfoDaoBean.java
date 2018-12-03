@@ -252,5 +252,17 @@ public class BillInfoDaoBean {
 		this.updateTime = updateTime;
 	}
 
+	@Override
+	public String toString() {
+		return "BillInfoDaoBean [id=" + id + ", spId=" + spId + ", type=" + type + ", terminalType=" + terminalType
+				+ ", status=" + status + ", outTradeNo=" + outTradeNo + ", prepayId=" + prepayId + ", subject="
+				+ subject + ", tradeNo=" + tradeNo + ", sellerId=" + sellerId + ", buyerId=" + buyerId + ", isRefund="
+				+ isRefund + ", refundAmount=" + refundAmount + ", notifyStatus=" + notifyStatus + ", notifyParam="
+				+ notifyParam + ", totalFee=" + totalFee + ", price=" + price + ", quantity=" + quantity
+				+ ", notifyUrl=" + notifyUrl + ", returnUrl=" + returnUrl + ", showUrl=" + showUrl + ", notifyId="
+				+ notifyId + ", notifyTime=" + notifyTime + ", createTime=" + createTime + ", updateTime=" + updateTime
+				+ "]";
+	}
 
+	
 }

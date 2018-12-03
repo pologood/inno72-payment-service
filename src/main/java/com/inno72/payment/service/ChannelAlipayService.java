@@ -67,7 +67,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<RspCreateBillBean> createBill(long billId, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
+	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
 			ReqCreateBillBean reqBean) throws TransException {
 
 		checkTerminalType(reqBean.getTerminalType());
@@ -120,7 +120,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 			}
 
 			try {
-				handleDbCreateBill(billId, spInfo, null, currentTime, reqBean);
+				handleDbCreateBill(billId, spInfo, null, currentTime, remoteIp, reqBean);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				throw new TransException(ErrorCode.ERR_DB, Message.getMessage(ErrorCode.ERR_DB));

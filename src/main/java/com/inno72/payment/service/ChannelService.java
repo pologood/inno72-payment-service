@@ -9,6 +9,6 @@ import com.inno72.payment.model.ThirdPartnerInfo;
 
 public interface ChannelService {
 
-	public Result<RspCreateBillBean> createBill(long billId, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo, ReqCreateBillBean reqBean) throws TransException;
+	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo, ReqCreateBillBean reqBean) throws TransException;
 
 }

@@ -73,7 +73,7 @@ public class ChannelWechatService  extends ChannelBaseService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<RspCreateBillBean> createBill(long billId, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
+	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
 			ReqCreateBillBean reqBean) throws TransException {
 		
 		
@@ -143,7 +143,7 @@ public class ChannelWechatService  extends ChannelBaseService {
 			
 
 			try {
-				handleDbCreateBill(billId, spInfo, rspWechatBillBean.getPrepayId(), currentTime,
+				handleDbCreateBill(billId, spInfo, rspWechatBillBean.getPrepayId(), currentTime, remoteIp,
 						reqBean);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
