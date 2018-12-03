@@ -34,9 +34,8 @@ public class NotifyController {
 	
 	@Autowired
 	private VerifySignAlipayService verifySignAlipayService;
-//	
-//	@Autowired
-//	private NotifyService notifyService;
+
+	
 	
 	@RequestMapping("/notify/alipay/{spId}")
 	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) throws IOException {

@@ -53,7 +53,7 @@ public class VerifySignAlipayService implements VerifySignService {
 		
         try {
         	if(!checker.check(preSignStr, sign, signType, Constants.SERVICE_CHARSET)) {
-        		logger.error("alipay sign is wrong");	
+        		logger.warn("alipay sign is wrong");	
         		return false;
         	}
         	return true;
