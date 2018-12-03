@@ -45,7 +45,7 @@ public class LogFilter implements Filter{
 				if(values != null && values.length > 0) {
 					value = String.join(",", values);
 				}
-				sb.append(String.format("%s:%s", key, value));
+				sb.append(String.format("%s:%s,", key, value));
 			}
 			sb.append("}");
 			

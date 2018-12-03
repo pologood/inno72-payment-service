@@ -37,7 +37,7 @@ public class NotifyController {
 
 	
 	
-	@RequestMapping("/notify/alipay/{spId}")
+	@RequestMapping("/alipay/{spId}")
 	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) throws IOException {
 		
 		logger.info("alipay notify:" + req.getRequestURI());
@@ -69,7 +69,7 @@ public class NotifyController {
 		
 	}
 	
-	@RequestMapping("/notify/wechat/native/{spId}")
+	@RequestMapping("/wechat/native/{spId}")
 	public void notifyFromWechatQr(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) {
 		
 		try {
