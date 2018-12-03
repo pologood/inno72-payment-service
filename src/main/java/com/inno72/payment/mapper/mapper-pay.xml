@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.inno72.payment.mapper.PayInfoDao">
+    
+    <resultMap id="PaySpInfoDaoMap" type="com.inno72.payment.model.PaySpInfoDaoBean">
+		<id property="id" 			column="ID" />
+		<result property="thirdpartnerGroupId" 		column="THIRDPARTNER_GROUP_ID"/>
+		<result property="name" 		column="NAME"/>
+		<result property="signKey" 	column="sign_key"/>
+		<result property="status" 		column="STATUS"/>
+		<result property="createTime" 	column="CREATE_TIME"/>
+		<result property="updateTime" 	column="UPDATE_TIME"/>
+	</resultMap>
+	
+	<resultMap id="BillInfoDaoMap" type="com.inno72.payment.model.BillInfoDaoBean">
+		<id property="id" 				column="ID" />
+		<result property="spId" 		column="SP_ID"/>
+		<result property="type" 		column="TYPE"/>
+		<result property="terminalType" 		column="TERMINAL_TYPE"/>
+		<result property="status" 		column="STATUS"/>
+		<result property="outTradeNo" 	column="OUT_TRADE_NO"/>
+		<result property="prepayId" 	column="PREPAY_ID"/>
+		<result property="subject" 		column="SUBJECT"/>
+		<result property="tradeNo" 		column="TRADE_NO"/>
+		<result property="sellerId" 	column="SELLER_ID"/>
+		<result property="buyerId" 		column="BUYER_ID"/>
+		<result property="isRefund" 	column="IS_REFUND"/>
+		<result property="refundAmount" 	column="REFUND_AMOUNT"/>
+		<result property="notifyStatus" 	column="NOTIFY_STATUS"/>
+		<result property="notifyParam" 	column="NOTIFY_PARAM"/>
+		<result property="totalFee" 		column="TOTAL_FEE"/>
+		<result property="price" 		column="PRICE"/>
+		<result property="quantity" 	column="QUANTITY"/>
+		<result property="notifyUrl" 	column="NOTIFY_URL"/>
+		<result property="returnUrl" 	column="RETURN_URL"/>
+		<result property="showUrl" 		column="SHOW_URL"/>
+		<result property="notifyId" 	column="NOTIFY_ID"/>
+		<result property="notifyTime" 	column="NOTIFY_TIME"/>
+		<result property="createTime" 	column="CREATE_TIME"/>
+		<result property="updateTime" 	column="UPDATE_TIME"/>
+	</resultMap>
+	
+	<resultMap id="ThirdPartnerInfoDaoMap" type="com.inno72.payment.model.ThirdPartnerInfo">
+		<id property="id" 				column="id" />
+		<result property="groupId" 		column="group_id"/>
+		<result property="name" 		column="name"/>
+		<result property="secureKey" 		column="secure_key"/>
+		<result property="type" 			column="type"/>
+		<result property="terminalType" 	column="terminal_type"/>
+		<result property="thirdpartnerPublicKey" 	column="thirdpartner_public_key"/>
+		<result property="publicKey" 		column="public_key"/>
+		<result property="privateKey" 		column="private_key"/>
+		<result property="mid" 	column="mid"/>
+		<result property="appId" 		column="appid"/>
+		<result property="certPath" 	column="cert_path"/>
+		<result property="createTime" 	column="create_time"/>
+		<result property="updateTime" 	column="update_time"/>
+	</resultMap>
+	
+	
+    <select id="getSpInfo"  resultMap="PaySpInfoDaoMap">  
+        SELECT * FROM INNO72_PAYMENT_SP_INFO WHERE ID=#{spId} and STATUS=1
+    </select>
+    
+    <select id="getSpSecureKey" resultType="string">
+    	SELECT T.SECURE_KEY FROM INNO72_PAYMENT_SP_INFO S LEFT JOIN INNO72_PAYMENT_THIRDPARTNER_INFO T ON S.THIRDPARTNER_GROUP_ID = T.GROUP_ID 
+    	WHERE S.ID=#{spId} AND T.TYPE=#{type} AND T.TERMINAL_TYPE=#{terminalType}
+    </select>
+    
+    <select id="getSpThirdPartnerPublicKey" resultType="string">
+    	SELECT T.THIRDPARTNER_PUBLIC_KEY FROM INNO72_PAYMENT_SP_INFO S LEFT JOIN INNO72_PAYMENT_THIRDPARTNER_INFO T ON S.THIRDPARTNER_GROUP_ID = T.GROUP_ID 
+    	WHERE S.ID=#{spId} AND T.TYPE=#{type} AND T.TERMINAL_TYPE=#{terminalType}
+    </select>
+    
+    <select id="getBillInfoByBillId"  resultMap="BillInfoDaoMap">
+        SELECT * FROM INNO72_PAYMENT_PAY_INFO WHERE ID=#{billId}
+    </select>
+    
+    <select id="getBillInfoByOutTradeNo"  resultMap="BillInfoDaoMap">
+        SELECT * FROM INNO72_PAYMENT_PAY_INFO WHERE SP_ID=#{spId} AND OUT_TRADE_NO=#{outTradeNo}
+    </select>
+    
+    <select id="getThirdPartnerInfo" resultMap="ThirdPartnerInfoDaoMap">
+    	SELECT * FROM INNO72_PAYMENT_THIRDPARTNER_INFO WHERE type=#{type} AND group_id=#{groupId} AND terminal_type=#{terminalType}
+    </select>
+
+	<insert id="insertBillInfo" parameterType="com.inno72.payment.model.BillInfoDaoBean">
+        INSERT INTO INNO72_PAYMENT_PAY_INFO (ID, SP_ID, TYPE, TERMINAL_TYPE, STATUS, OUT_TRADE_NO, PREPAY_ID, SUBJECT, TRADE_NO,
+        SELLER_ID,BUYER_ID,IS_REFUND,REFUND_AMOUNT,NOTIFY_STATUS,NOTIFY_PARAM,
+        TOTAL_FEE,PRICE,QUANTITY,NOTIFY_URL,RETURN_URL,SHOW_URL,NOTIFY_ID,NOTIFY_TIME,
+        CREATE_TIME,UPDATE_TIME) 
+        VALUES(#{id},#{spId},#{type},#{terminalType},#{status},#{outTradeNo},#{prepayId},
+        #{subject},#{tradeNo},#{sellerId},#{buyerId},#{isRefund},#{refundAmount},#{notifyStatus},#{notifyParam},
+        #{totalFee},#{price},#{quantity},
+        #{notifyUrl},#{returnUrl},#{showUrl},#{notifyId},#{notifyTime},
+        #{createTime},#{updateTime})
+    </insert>
+    
+    <insert id="insertPaymentLog" parameterType="com.inno72.payment.model.PaymentLogDaoBean">
+        INSERT INTO INNO72_PAYMENT_PAYLOG_INFO(SP_ID, TYPE, TERMINAL_TYPE, STATUS, BILL_ID, OUT_TRADE_NO, SELLER_ID, BUYER_ID, TOTAL_FEE, IS_REFUND, MESSAGE, IP, UPDATE_TIME) 
+        VALUES(#{spId},#{type},#{terminalType},#{status},#{billId},#{outTradeNo},#{sellerId},#{buyerId},
+        #{totalFee},#{isRefund},#{message},#{ip},#{updateTime})
+    </insert>
+    
+    <update id="updatePaySuccess">
+    	UPDATE INNO72_PAYMENT_PAY_INFO SET TRADE_NO=#{tradeNo}, NOTIFY_STATUS=#{notifyStatus}, NOTIFY_ID=#{notifyId}, NOTIFY_TIME=#{notifyTime}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
+    </update>
+    <update id="updateNotifyStatus">
+    	UPDATE INNO72_PAYMENT_PAY_INFO SET NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{billId}
+    </update>
+    
+    <update id="updateStatus">
+    	UPDATE INNO72_PAYMENT_PAY_INFO SET STATUS=#{status}, UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
+    </update>
+    
+    <update id="updatePayRefundInfo">
+    	UPDATE INNO72_PAYMENT_PAY_INFO SET IS_REFUND=#{isRefund}, REFUND_AMOUNT=#{refundAmount} ,UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
+    </update>
+    
+</mapper> 
