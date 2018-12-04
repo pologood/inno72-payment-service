@@ -33,78 +33,80 @@ import com.inno72.payment.utils.wechat.WechatXmlParse;
 @Controller
 @RequestMapping("/notify")
 public class NotifyController {
-	
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Autowired
 	private VerifySignWechatService verifySignWechatService;
-	
+
 	@Autowired
 	private VerifySignAlipayService verifySignAlipayService;
-	
+
 	@Autowired
 	private NotifyService notifyService;
 
-	
-	
+
+	private static final String WECHAT_RSP_SUCCESS = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
+
 	@RequestMapping("/alipay/{spId}")
-	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) throws IOException {
-		
-		if(StringUtils.isBlank(spId)) {
+	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp)
+			throws IOException {
+
+		if (StringUtils.isBlank(spId)) {
 			logger.info("spid is blank");
 			rsp.sendError(401);
 			return;
 		}
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 		Enumeration<String> paramNames = req.getParameterNames();
-		while(paramNames.hasMoreElements()) {
+		while (paramNames.hasMoreElements()) {
 			String name = paramNames.nextElement();
 			params.put(name, req.getParameter(name));
 		}
-			
-		if(!verifySignAlipayService.verifySign(spId, Constants.SOURCE_FLAG_IGNORE_PLATFORM, params)) {
+
+		if (!verifySignAlipayService.verifySign(spId, Constants.SOURCE_FLAG_IGNORE_PLATFORM, params)) {
 			rsp.sendError(401);
 			return;
 		}
-		
-		if(!"TRADE_SUCCESS".equals(req.getParameter("trade_status"))) {
+
+		if (!"TRADE_SUCCESS".equals(req.getParameter("trade_status"))) {
 			rsp.getOutputStream().write("success".getBytes());
 			rsp.getOutputStream().flush();
 			return;
 		}
-		
+
 		ReqNotifyBean reqNotifyBean = new ReqNotifyBean();
-		
-		SimpleDateFormat ds=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				
+
+		SimpleDateFormat ds = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		try {
-			
+
 			reqNotifyBean.setBillId(Long.parseLong(req.getParameter("out_trade_no")));
 			reqNotifyBean.setClientIp(req.getRemoteAddr());
-			reqNotifyBean.setNotifyId(req.getParameter("notify_id"));
 			reqNotifyBean.setNotifyTime(ds.parse(req.getParameter("notify_time")).getTime());
 			reqNotifyBean.setRspCode("00");
 			reqNotifyBean.setTradeNo(req.getParameter("trade_no"));
 			reqNotifyBean.setRspMsg("ok");
-			reqNotifyBean.setTotalFee(new BigDecimal(req.getParameter("total_amount")).multiply(new BigDecimal(100)).longValue());
+			reqNotifyBean.setTotalFee(
+					new BigDecimal(req.getParameter("total_amount")).multiply(new BigDecimal(100)).longValue());
 			reqNotifyBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);
 			reqNotifyBean.setNotifyId(req.getParameter("notify_id"));
 			reqNotifyBean.setUpdateTime(System.currentTimeMillis());
 			reqNotifyBean.setNotifyParam(JSON.toJSONString(params));
-			
-		} catch (Exception e){
+
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			rsp.sendError(401);
 			return;
 		}
-		
+
 		try {
 			Result<Void> res = notifyService.handleNotification(reqNotifyBean);
-			if(res.getCode() != Constants.RSP_RET_OK) {
+			if (res.getCode() != Constants.RSP_RET_OK) {
 				rsp.sendError(401);
 				return;
-			}else {
+			} else {
 				logger.info("alipy notify success!!!");
 				rsp.getOutputStream().write("success".getBytes());
 				rsp.getOutputStream().flush();
@@ -115,42 +117,75 @@ public class NotifyController {
 			rsp.sendError(401);
 		}
 	}
-	
+
 	@RequestMapping("/wechat/native/{spId}")
-	public void notifyFromWechatQr(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp) {
-		
-		try {
-			
-			if(StringUtils.isBlank(spId)) {
-				logger.info("spid is blank");
-				rsp.sendError(401);
-				return;
-			}
-			
-			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
-			StringBuilder xmlBuff = new StringBuilder();
-		
-			String line = null;
-			while ((line = in.readLine()) != null) {
-				xmlBuff.append(line);
-			}
-			
-			logger.info(String.format("wechat notify %s:%s", req.getRequestURI(), xmlBuff.toString()));
-			
-			Map<String, String> params = WechatXmlParse.parse(xmlBuff.toString());
-			if(verifySignWechatService.verifySign(spId, Constants.SOURCE_FLAG_QRCODE, params)) {
-				rsp.sendError(401);
-				return;
-			}
-			
+	public void notifyFromWechatQr(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp)
+			throws IOException {
+
+		if (StringUtils.isBlank(spId)) {
+			logger.info("spid is blank");
 			rsp.sendError(401);
+			return;
+		}
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		StringBuilder xmlBuff = new StringBuilder();
+
+		String line = null;
+		while ((line = in.readLine()) != null) {
+			xmlBuff.append(line);
+		}
+		try {
+			logger.info(String.format("wechat notify %s:%s", req.getRequestURI(), xmlBuff.toString()));
+
+			Map<String, String> params = WechatXmlParse.parse(xmlBuff.toString());
+			if (!verifySignWechatService.verifySign(spId, Constants.SOURCE_FLAG_QRCODE, params)) {
+				rsp.sendError(401);
+				return;
+			}
+
+			if (!"SUCCESS".equalsIgnoreCase(params.get("result_code"))) {
+				rsp.setContentType("text/xml");
+				rsp.getOutputStream().write(WECHAT_RSP_SUCCESS.getBytes());
+				rsp.getOutputStream().flush();
+				return;
+			}
+
+			ReqNotifyBean reqNotifyBean = new ReqNotifyBean();
+			SimpleDateFormat ds = new SimpleDateFormat("yyyyMMddHHmmss");
+
+
+			reqNotifyBean.setBillId(Long.parseLong(params.get("out_trade_no")));
+			reqNotifyBean.setClientIp(req.getRemoteAddr());
+			reqNotifyBean.setNotifyId("0");
+			reqNotifyBean.setNotifyTime(ds.parse(params.get("time_end")).getTime());
+
+
+			reqNotifyBean.setRspCode("00");
+			reqNotifyBean.setTradeNo(params.get("transaction_id"));
+			reqNotifyBean.setRspMsg("ok");
+			reqNotifyBean.setTotalFee(Long.parseLong(params.get("total_fee")));
+			reqNotifyBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);
+			reqNotifyBean.setUpdateTime(System.currentTimeMillis());
+			reqNotifyBean.setNotifyParam(JSON.toJSONString(params));
 			
+			Result<Void> res = notifyService.handleNotification(reqNotifyBean);
+			if (res.getCode() != Constants.RSP_RET_OK) {
+				rsp.sendError(401);
+				return;
+			} else {
+				logger.info("alipy notify success!!!");
+				rsp.setContentType("text/xml");
+				rsp.getOutputStream().write(WECHAT_RSP_SUCCESS.getBytes());
+				rsp.getOutputStream().flush();
+				return;
+			}
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			rsp.sendError(401);
+			return;
 		}
-		
-		
+
 	}
-	
-	
 }

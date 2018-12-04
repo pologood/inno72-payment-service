@@ -103,7 +103,7 @@ public class ChannelWechatService  extends ChannelBaseService {
 			params.put("time_expire", dateFormat.format(new Date(currentTime + reqBean.getTransTimeout() * 60 * 1000)));
 		}
 		
-		params.put("notify_url", getNotifyUrl());
+		params.put("notify_url", String.format(getNotifyUrl(), spInfo.getId()));
 		
 		if(Constants.SOURCE_FLAG_QRCODE == reqBean.getTerminalType()) {
 			params.put("trade_type", "NATIVE");
