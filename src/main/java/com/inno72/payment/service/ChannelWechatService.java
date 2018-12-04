@@ -61,10 +61,10 @@ public class ChannelWechatService  extends ChannelBaseService {
 		String state = applicationContext.getEnvironment().getActiveProfiles()[0];
 		switch(state) {
 			
-			case "dev": return "";
-			case "test": return "";
-			case "stage":
-			case "prod": return "";
+			case "dev": 	return "http://pay.72solo.com/notify/wechat/native/%s";
+			case "test": 	return "http://pay.36solo.com/notify/wechat/native/%s";
+			case "stage": 	return "http://pay.32solo.com/notify/wechat/native/%s";
+			case "prod": 	return "http://pay.inno72.com/notify/wechat/native/%s";
 			default:
 				logger.error("not found profile:" + state);
 				throw new TransException(ErrorCode.ERR_NOT_SUPPORT, Message.getMessage(ErrorCode.ERR_NOT_SUPPORT));
@@ -106,7 +106,7 @@ public class ChannelWechatService  extends ChannelBaseService {
 		params.put("notify_url", getNotifyUrl());
 		
 		if(Constants.SOURCE_FLAG_QRCODE == reqBean.getTerminalType()) {
-			params.put("trade_type", "Native");
+			params.put("trade_type", "NATIVE");
 		}
 		
 		String sign = Utility.createLinkString(params);
