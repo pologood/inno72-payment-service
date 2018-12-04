@@ -174,7 +174,7 @@ public class NotifyController {
 				rsp.sendError(401);
 				return;
 			} else {
-				logger.info("alipy notify success!!!");
+				logger.info("wechat notify success!!!");
 				rsp.setContentType("text/xml");
 				rsp.getOutputStream().write(WECHAT_RSP_SUCCESS.getBytes());
 				rsp.getOutputStream().flush();
