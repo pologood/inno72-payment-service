@@ -108,6 +108,7 @@
     	UPDATE INNO72_PAYMENT_PAY_INFO SET TRADE_NO=#{tradeNo}, NOTIFY_STATUS=#{notifyStatus}, NOTIFY_ID=#{notifyId}, NOTIFY_TIME=#{notifyTime}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
     	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
     </update>
+    
     <update id="updateNotifyStatus">
     	UPDATE INNO72_PAYMENT_PAY_INFO SET NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}
     	WHERE ID=#{billId}
