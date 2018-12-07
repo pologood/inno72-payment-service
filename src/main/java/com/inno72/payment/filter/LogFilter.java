@@ -30,7 +30,7 @@ public class LogFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		
-		
+		logger.info("enter filter:" + request.getContentType());
 		if(StringUtils.isNotEmpty(request.getContentType())
 				&& (request.getContentType().startsWith("application/x-www-form-urlencoded") 
 				|| request.getContentType().startsWith("application/json") )) {
