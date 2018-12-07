@@ -4,8 +4,6 @@ package com.inno72.payment.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +26,7 @@ import com.inno72.payment.service.IdWorker;
 @RequestMapping("/pay")
 public class PaymentController {
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Autowired
 	private BillService billService;
 	
@@ -49,10 +46,6 @@ public class PaymentController {
 	
 	@RequestMapping(value="/create")
 	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
-		
-		logger.info(reqBean.toString());
-		
-		logger.info("spId:" + req.getParameter("spId"));
 		
 		if(StringUtils.isBlank(reqBean.getSpId())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spId"));
