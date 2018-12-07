@@ -36,6 +36,7 @@ public class GlobalControllerHandler implements ResponseBodyAdvice<Object> {
 			result.setCode(((TransException)ex).getRet());
 			result.setMsg(((TransException)ex).getMsg());
 		}else {
+			logger.error(ex.getMessage(), ex);
 			int retCode = -100;
 			String msg = "系统错误";
 			result.setCode(retCode);
