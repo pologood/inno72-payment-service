@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,7 +44,7 @@ public class PaymentController {
 	private IdWorker idWorker;
 	
 	
-	@RequestMapping(value="/queryBillInfo", method={RequestMethod.POST})
+	@RequestMapping("/queryBillInfo")
 	@ResponseBody
     public  Result<RspQueryBillBean> queryBillInfo(@RequestBody ReqQueryBillBean reqBean) throws TransException {
 
@@ -53,7 +52,7 @@ public class PaymentController {
 		
     }
 	
-	@RequestMapping(value="/create", method={RequestMethod.POST})
+	@RequestMapping("/create")
 	@ResponseBody
 	public  Result<RspCreateBillBean> createBill(@RequestBody ReqCreateBillBean reqBean) throws TransException {
 		
