@@ -30,13 +30,13 @@ public class LogFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		
-		logger.info("enter filter:" + request.getContentType());
+		HttpServletRequest httpRequest = (HttpServletRequest)request;
+		
+		logger.info("enter filter:" + httpRequest.getContentType() + " " + httpRequest.getContentLength() + " " + httpRequest.getMethod() + " " + httpRequest.getRequestURI());
 		if(StringUtils.isNotEmpty(request.getContentType())
 				&& (request.getContentType().startsWith("application/x-www-form-urlencoded") 
 				|| request.getContentType().startsWith("application/json") )) {
-			
-			HttpServletRequest httpRequest = (HttpServletRequest)request;
-			
+				
 			Map<String, String[]> param = httpRequest.getParameterMap();
 			StringBuilder sb = new StringBuilder("{");
 			for(String key : param.keySet()) {
