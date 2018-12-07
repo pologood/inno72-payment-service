@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.inno72.common.Result;
 import com.inno72.payment.common.ErrorCode;
@@ -52,9 +54,12 @@ public class PaymentController {
 	
 	@RequestMapping(value="/create", method={RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
-	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
+	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean) throws TransException {
 		
 		logger.info(reqBean.toString());
+		
+		
+		HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest(); 
 		
 		if(StringUtils.isBlank(reqBean.getSpId())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spId"));
