@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.inno72.common.Result;
 import com.inno72.payment.common.ErrorCode;
@@ -50,12 +48,10 @@ public class PaymentController {
     }
 	
 	@RequestMapping(value="/create")
-	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean) throws TransException {
+	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean, HttpServletRequest req) throws TransException {
 		
 		logger.info(reqBean.toString());
 		
-		HttpServletRequest req = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-
 		logger.info("spId:" + req.getParameter("spId"));
 		
 		if(StringUtils.isBlank(reqBean.getSpId())) {
