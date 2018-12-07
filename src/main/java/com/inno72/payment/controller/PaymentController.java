@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,17 +45,17 @@ public class PaymentController {
 	private IdWorker idWorker;
 	
 	
-	@RequestMapping(value="/queryBillInfo", method={RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value="/queryBillInfo", method={RequestMethod.POST})
 	@ResponseBody
-    public  Result<RspQueryBillBean> queryBillInfo(ReqQueryBillBean reqBean) throws TransException {
+    public  Result<RspQueryBillBean> queryBillInfo(@RequestBody ReqQueryBillBean reqBean) throws TransException {
 
 		return billService.queryBill(reqBean);
 		
     }
 	
-	@RequestMapping(value="/create", method={RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value="/create", method={RequestMethod.POST})
 	@ResponseBody
-	public  Result<RspCreateBillBean> createBill(ReqCreateBillBean reqBean) throws TransException {
+	public  Result<RspCreateBillBean> createBill(@RequestBody ReqCreateBillBean reqBean) throws TransException {
 		
 		logger.info(reqBean.toString());
 		
