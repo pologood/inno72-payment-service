@@ -18,7 +18,13 @@
 	</properties>
 
 	<dependencies>
-
+		<!-- web模块 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>1.5.2.RELEASE</version>
+		</dependency>
+	
 		<!-- 需打为war包时，tomcat由外部提供 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
