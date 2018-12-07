@@ -26,9 +26,11 @@ import com.inno72.payment.common.ErrorCode;
 import com.inno72.payment.common.Message;
 import com.inno72.payment.common.TransException;
 import com.inno72.payment.dto.ReqCreateBillBean;
+import com.inno72.payment.dto.ReqRefundBillBean;
 import com.inno72.payment.dto.RspCreateBillBean;
+import com.inno72.payment.dto.RspRefundBillBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
-import com.inno72.payment.model.ThirdPartnerInfo;
+import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 import com.inno72.payment.utils.HttpFormConnector;
 import com.inno72.payment.utils.Utility;
 import com.inno72.payment.utils.wechat.RspWechatBillBean;
@@ -73,11 +75,13 @@ public class ChannelWechatService  extends ChannelBaseService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
+	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfoDaoBean thirdPartnerInfo,
 			ReqCreateBillBean reqBean) throws TransException {
 		
 		
 		checkTerminalType(reqBean.getTerminalType());
+		
+		checkPayRequest(reqBean);
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		
@@ -165,6 +169,13 @@ public class ChannelWechatService  extends ChannelBaseService {
 			logger.error(e.getMessage(), e);
 			throw new TransException(ErrorCode.ERR_CONNECT_WECHAT, Message.getMessage(ErrorCode.ERR_CONNECT_WECHAT));
 		}
+	}
+
+	@Override
+	public Result<RspRefundBillBean> refundBill(ReqRefundBillBean reqBean, PaySpInfoDaoBean spInfo,
+			ThirdPartnerInfoDaoBean thirdPartnerInfo, String remoteIp) throws TransException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

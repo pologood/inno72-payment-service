@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
 import com.inno72.payment.model.PaymentLogDaoBean;
-import com.inno72.payment.model.ThirdPartnerInfo;
+import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 
 public interface PayInfoDao {
 
@@ -19,7 +19,7 @@ public interface PayInfoDao {
 
 	public BillInfoDaoBean getBillInfoByOutTradeNo(@Param("spId") String spId, @Param("outTradeNo") String outTradeNo);
 
-	public ThirdPartnerInfo getThirdPartnerInfo(@Param("groupId")String groupId, @Param("type")int type, @Param("terminalType") int terminalType);
+	public ThirdPartnerInfoDaoBean getThirdPartnerInfo(@Param("groupId")String groupId, @Param("type")int type, @Param("terminalType") int terminalType);
 	
 	public int insertBillInfo(BillInfoDaoBean bean);
 

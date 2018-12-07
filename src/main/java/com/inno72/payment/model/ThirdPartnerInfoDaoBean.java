@@ -2,7 +2,7 @@ package com.inno72.payment.model;
 
 import java.util.Date;
 
-public class ThirdPartnerInfo {
+public class ThirdPartnerInfoDaoBean {
 	
 	private Integer id;
 	

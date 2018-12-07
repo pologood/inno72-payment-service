@@ -1,6 +1,6 @@
 package com.inno72.payment.service;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import com.inno72.payment.common.ErrorCode;
 import com.inno72.payment.common.Message;
 import com.inno72.payment.common.TransException;
 import com.inno72.payment.dto.ReqCreateBillBean;
+import com.inno72.payment.dto.ReqRefundBillBean;
 import com.inno72.payment.mapper.PayInfoDao;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
@@ -23,13 +24,13 @@ public abstract class ChannelBaseService implements ChannelService{
 	protected PayInfoDao payInfoDao;
 	
 	
-	protected void checkRequest(ReqCreateBillBean reqBean) throws TransException{
+	protected void checkPayRequest(ReqCreateBillBean reqBean) throws TransException{
 		
-		if(StringUtils.isEmpty(reqBean.getOutTradeNo())){
+		if(StringUtils.isBlank(reqBean.getOutTradeNo())){
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo"));
 		}
 		
-		if(!StringUtils.isEmpty(reqBean.getExtra()) && reqBean.getExtra().length() > 128) {
+		if(!StringUtils.isBlank(reqBean.getExtra()) && reqBean.getExtra().length() > 128) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "extra"));
 		}
 		
@@ -37,7 +38,7 @@ public abstract class ChannelBaseService implements ChannelService{
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "fee"));
 		}
 		
-		if(StringUtils.isEmpty(reqBean.getSubject())) {
+		if(StringUtils.isBlank(reqBean.getSubject())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "subject"));
 		}
 		
@@ -53,6 +54,38 @@ public abstract class ChannelBaseService implements ChannelService{
 		}
 		
 	}
+	
+	
+	protected BillInfoDaoBean checkRefundRequest(ReqRefundBillBean reqBean) throws TransException{
+		
+		
+		if(StringUtils.isEmpty(reqBean.getOutTradeNo())){
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo"));
+		}
+		
+		if(reqBean.getAmount() <= 0) {
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
+		}
+		
+		BillInfoDaoBean billInfo = payInfoDao.getBillInfoByOutTradeNo(reqBean.getSpId(), reqBean.getOutTradeNo());
+		
+		if(billInfo == null){
+			logger.warn(String.format("bill not found spid:%s, outTradeNo:%s", reqBean.getSpId(), reqBean.getOutTradeNo()));
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo or spid"));
+		}
+		
+		
+		if(billInfo.getIsRefund() == 1 && (billInfo.getRefundAmount() + reqBean.getAmount() > billInfo.getTotalFee())) {
+			logger.warn("bill can not refound amount is wrong");
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
+		}
+		
+		
+		return billInfo;
+	}
+	
+	
+	
 	
 	protected void handleDbCreateBill(long payId,
 			PaySpInfoDaoBean spInfo,

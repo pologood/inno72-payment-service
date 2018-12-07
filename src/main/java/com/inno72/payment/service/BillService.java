@@ -20,7 +20,7 @@ import com.inno72.payment.dto.RspQueryBillBean;
 import com.inno72.payment.mapper.PayInfoDao;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
-import com.inno72.payment.model.ThirdPartnerInfo;
+import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 
 
 
@@ -37,7 +37,7 @@ public class BillService {
 		return payInfoDao.getSpInfo(spId);
 	}
 	
-	public ThirdPartnerInfo getThirdPartnerInfo(String groupId, int type, int terminalType) {
+	public ThirdPartnerInfoDaoBean getThirdPartnerInfo(String groupId, int type, int terminalType) {
 		
 		if(type == Constants.PAY_CHANNEL_ALIPAY) {
 			terminalType = Constants.SOURCE_FLAG_IGNORE_PLATFORM;

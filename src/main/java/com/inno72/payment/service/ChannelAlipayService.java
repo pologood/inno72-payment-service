@@ -25,13 +25,18 @@ import com.inno72.payment.common.ErrorCode;
 import com.inno72.payment.common.Message;
 import com.inno72.payment.common.TransException;
 import com.inno72.payment.dto.ReqCreateBillBean;
+import com.inno72.payment.dto.ReqRefundBillBean;
 import com.inno72.payment.dto.RspCreateBillBean;
+import com.inno72.payment.dto.RspRefundBillBean;
+import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
-import com.inno72.payment.model.ThirdPartnerInfo;
+import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 
 
 @Service("channelAlipayService")
 public class ChannelAlipayService extends ChannelBaseService {
+	
+	private static final String ALIPAY_URL = "https://openapi.alipay.com/gateway.do";
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -65,20 +70,21 @@ public class ChannelAlipayService extends ChannelBaseService {
 			
 		}
 	}
-
+	
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfo thirdPartnerInfo,
+	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo, ThirdPartnerInfoDaoBean thirdPartnerInfo,
 			ReqCreateBillBean reqBean) throws TransException {
 
 		checkTerminalType(reqBean.getTerminalType());
 
-		checkRequest(reqBean);
+		checkPayRequest(reqBean);
 
 		long currentTime = System.currentTimeMillis();
 
 		if (reqBean.getTerminalType() == Constants.SOURCE_FLAG_QRCODE) {
 
-			AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do",
+			AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_URL,
 					thirdPartnerInfo.getAppId(), thirdPartnerInfo.getPrivateKey(), "json", Constants.SERVICE_CHARSET,
 					thirdPartnerInfo.getThirdpartnerPublicKey(), "RSA2");
 
@@ -141,6 +147,27 @@ public class ChannelAlipayService extends ChannelBaseService {
 
 		logger.warn("terminalType do not support:" + thirdPartnerInfo.getTerminalType());
 		throw new TransException(ErrorCode.ERR_NOT_SUPPORT, Message.getMessage(ErrorCode.ERR_NOT_SUPPORT));
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public Result<RspRefundBillBean> refundBill(ReqRefundBillBean reqBean, PaySpInfoDaoBean spInfo,
+			ThirdPartnerInfoDaoBean thirdPartnerInfo, String remoteIp) throws TransException {
+		
+		
+		BillInfoDaoBean billInfo = checkRefundRequest(reqBean);
+		
+		AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_URL,
+				thirdPartnerInfo.getAppId(), thirdPartnerInfo.getPrivateKey(), "json", Constants.SERVICE_CHARSET,
+				thirdPartnerInfo.getThirdpartnerPublicKey(), "RSA2");
+		
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		
+		
+		
+		return null;
 	}
 
 }

@@ -18,7 +18,7 @@ import com.inno72.payment.dto.ReqQueryBillBean;
 import com.inno72.payment.dto.RspCreateBillBean;
 import com.inno72.payment.dto.RspQueryBillBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
-import com.inno72.payment.model.ThirdPartnerInfo;
+import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 import com.inno72.payment.service.BillService;
 import com.inno72.payment.service.ChannelFactoryService;
 import com.inno72.payment.service.IdWorker;
@@ -59,7 +59,7 @@ public class PaymentController {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spinfo not found"));
 		}
 		
-		ThirdPartnerInfo thirdPartnerInfo = billService.getThirdPartnerInfo(spInfo.getThirdpartnerGroupId(), reqBean.getType(), reqBean.getTerminalType());
+		ThirdPartnerInfoDaoBean thirdPartnerInfo = billService.getThirdPartnerInfo(spInfo.getThirdpartnerGroupId(), reqBean.getType(), reqBean.getTerminalType());
 		if(thirdPartnerInfo == null) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "thirdPartnerInfo not found"));
 		}
