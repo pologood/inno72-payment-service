@@ -199,8 +199,10 @@ public class NotifyService {
 	public Result<Void> handleRefundNotification(ReqRefundNotifyBean reqBean) throws TransException {
 
 		RefundInfoDaoBean refundInfo = payInfoDao.getRefundInfo(reqBean.getOutRefundNo());
+		
+		BillInfoDaoBean billInfo = payInfoDao.getBillInfoByBillId(refundInfo.getBillId());
 
-		if (refundInfo == null) {
+		if (refundInfo == null || billInfo == null) {
 			throw new TransException(ErrorCode.ERR_BILL_NOT_FOUND, Message.getMessage(ErrorCode.ERR_BILL_NOT_FOUND));
 		}
 
@@ -225,10 +227,10 @@ public class NotifyService {
 		}
 		
 		if (notifyRefundCient(reqBean.getRefundStatus(), refundInfo)) {
-			handleRefundInfo(refundInfo, reqBean, reqBean.getRefundStatus(), Constants.COMMON_STATUS_YES, currentTime);
+			handleRefundInfo(refundInfo, billInfo, reqBean, reqBean.getRefundStatus(), Constants.COMMON_STATUS_YES, currentTime);
 			return Results.success();
 		}else {
-			handleRefundInfo(refundInfo, reqBean, reqBean.getRefundStatus(), Constants.COMMON_STATUS_NO, currentTime);
+			handleRefundInfo(refundInfo, billInfo, reqBean, reqBean.getRefundStatus(), Constants.COMMON_STATUS_NO, currentTime);
 			return Results.failure("notify fail");
 		}
 		
@@ -259,7 +261,7 @@ public class NotifyService {
 	}
 
 
-	protected void handleRefundInfo(RefundInfoDaoBean refundInfo, ReqRefundNotifyBean reqBean, int status,
+	protected void handleRefundInfo(RefundInfoDaoBean refundInfo, BillInfoDaoBean billInfo, ReqRefundNotifyBean reqBean, int status,
 			int notifyStatus, long updateTime) throws TransException {
 
 		PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
@@ -271,6 +273,7 @@ public class NotifyService {
 		logDaoBean.setIsRefund(1);
 		logDaoBean.setStatus(status);
 		logDaoBean.setTotalFee(refundInfo.getRefundFee());
+		logDaoBean.setTerminalType(billInfo.getTerminalType());
 		logDaoBean.setType(refundInfo.getType());
 		logDaoBean.setUpdateTime(updateTime);
 		payInfoDao.insertPaymentLog(logDaoBean);

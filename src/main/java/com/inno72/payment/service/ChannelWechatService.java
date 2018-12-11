@@ -216,19 +216,20 @@ public class ChannelWechatService extends ChannelBaseService {
 				throw new TransException(ErrorCode.ERR_DATA_CONFLICT, Message.getMessage(ErrorCode.ERR_DATA_CONFLICT));
 			}
 			
-			PaymentLogDaoBean logBeforeDaoBean = new PaymentLogDaoBean();
-			logBeforeDaoBean.setBillId(refundBillId);
-			logBeforeDaoBean.setBuyerId(billInfo.getBuyerId());
-			logBeforeDaoBean.setIp(remoteIp);
-			logBeforeDaoBean.setMessage("wait refund");
-			logBeforeDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
-			logBeforeDaoBean.setSpId(reqBean.getSpId());
-			logBeforeDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
-			logBeforeDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
-			logBeforeDaoBean.setTotalFee(reqBean.getAmount());
-			logBeforeDaoBean.setType(billInfo.getType());
-			logBeforeDaoBean.setUpdateTime(currentTime);
-			payInfoDao.insertPaymentLog(logBeforeDaoBean);
+			PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
+			logDaoBean.setBillId(refundBillId);
+			logDaoBean.setBuyerId(billInfo.getBuyerId());
+			logDaoBean.setIp(remoteIp);
+			logDaoBean.setMessage("wait refund");
+			logDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
+			logDaoBean.setSpId(reqBean.getSpId());
+			logDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
+			logDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
+			logDaoBean.setTotalFee(reqBean.getAmount());
+			logDaoBean.setType(billInfo.getType());
+			logDaoBean.setTerminalType(billInfo.getTerminalType());
+			logDaoBean.setUpdateTime(currentTime);
+			payInfoDao.insertPaymentLog(logDaoBean);
 
 			Map<String, String> params = new HashMap<String, String>();
 
