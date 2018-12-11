@@ -181,7 +181,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 		
 		PaymentLogDaoBean logBeforeDaoBean = new PaymentLogDaoBean();
 		logBeforeDaoBean.setBillId(refundBillId);
-		logBeforeDaoBean.setBuyerId("");
+		logBeforeDaoBean.setBuyerId(billInfo.getBuyerId());
 		logBeforeDaoBean.setIp(remoteIp);
 		logBeforeDaoBean.setMessage("wait refund");
 		logBeforeDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
@@ -189,6 +189,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 		logBeforeDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
 		logBeforeDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
 		logBeforeDaoBean.setTotalFee(reqBean.getAmount());
+		logBeforeDaoBean.setTerminalType(billInfo.getTerminalType());
 		logBeforeDaoBean.setType(billInfo.getType());
 		logBeforeDaoBean.setUpdateTime(currentTime);
 		payInfoDao.insertPaymentLog(logBeforeDaoBean);
@@ -225,7 +226,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 				
 				PaymentLogDaoBean afterLogDaoBean = new PaymentLogDaoBean();
 				afterLogDaoBean.setBillId(refundBillId);
-				afterLogDaoBean.setBuyerId("");
+				afterLogDaoBean.setBuyerId(billInfo.getBuyerId());
 				afterLogDaoBean.setIp(remoteIp);
 				afterLogDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
 				afterLogDaoBean.setSpId(reqBean.getSpId());
@@ -233,6 +234,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 				afterLogDaoBean.setStatus(Constants.REFUNDSTATUS_SUCCESS);
 				afterLogDaoBean.setMessage("refund success");
 				afterLogDaoBean.setTotalFee(reqBean.getAmount());
+				afterLogDaoBean.setTerminalType(billInfo.getTerminalType());
 				afterLogDaoBean.setType(billInfo.getType());
 				afterLogDaoBean.setUpdateTime(currentTime);
 				payInfoDao.insertPaymentLog(afterLogDaoBean);

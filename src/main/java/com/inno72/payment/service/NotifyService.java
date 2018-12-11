@@ -152,7 +152,6 @@ public class NotifyService {
 		logDaoBean.setOutTradeNo(billInfoBean.getOutTradeNo());
 		logDaoBean.setSpId(billInfoBean.getSpId());
 		logDaoBean.setIsRefund(0);
-		;
 		logDaoBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);
 		logDaoBean.setTotalFee(billInfoBean.getTotalFee());
 		logDaoBean.setType(billInfoBean.getType());
@@ -245,7 +244,6 @@ public class NotifyService {
 		logDaoBean.setOutTradeNo(refundInfo.getOutRefundNo());
 		logDaoBean.setSpId(refundInfo.getSpId());
 		logDaoBean.setIsRefund(1);
-		;
 		logDaoBean.setStatus(reqBean.getRefundStatus());
 		logDaoBean.setTotalFee(refundInfo.getRefundFee());
 		logDaoBean.setType(refundInfo.getType());

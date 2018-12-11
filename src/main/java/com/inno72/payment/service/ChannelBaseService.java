@@ -79,6 +79,11 @@ public abstract class ChannelBaseService implements ChannelService{
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo or spid"));
 		}
 		
+		if(billInfo.getStatus() != Constants.PAYSTATUS_TRADE_SUCCESS) {
+			logger.warn(String.format("bill status is wrong:%s, outTradeNo:%s", reqBean.getSpId(), reqBean.getOutTradeNo()));
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo or spid"));
+		}
+		
 		if(billInfo.getIsRefund() == 1) {
 			logger.warn("bill had refound");
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
