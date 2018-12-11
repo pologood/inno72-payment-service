@@ -136,18 +136,19 @@ public class NotifyController {
 			return;
 		}
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
-		StringBuilder xmlBuff = new StringBuilder();
-
 		String line = null;
 		
 		try {
-			logger.info(String.format("wechat refund notify %s:%s", req.getRequestURI(), xmlBuff.toString()));
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+			StringBuilder xmlBuff = new StringBuilder();
 			
 			while ((line = in.readLine()) != null) {
 				xmlBuff.append(line);
 			}
 			
+			logger.info(String.format("wechat refund notify %s:%s", req.getRequestURI(), xmlBuff.toString()));
+				
 			Map<String, String> params = WechatXmlParse.parse(xmlBuff.toString());
 			
 			if (!"SUCCESS".equalsIgnoreCase(params.get("result_code"))) {
