@@ -217,23 +217,6 @@ public class ChannelWechatService extends ChannelBaseService {
 				throw new TransException(ErrorCode.ERR_DATA_CONFLICT, Message.getMessage(ErrorCode.ERR_DATA_CONFLICT));
 			}
 			
-			PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
-			logDaoBean.setBillId(refundBillId);
-			logDaoBean.setBuyerId(billInfo.getBuyerId());
-			logDaoBean.setIp(remoteIp);
-			logDaoBean.setMessage("wait refund");
-			logDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
-			logDaoBean.setSpId(reqBean.getSpId());
-			logDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
-			logDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
-			logDaoBean.setTotalFee(reqBean.getAmount());
-			logDaoBean.setType(billInfo.getType());
-			logDaoBean.setTerminalType(billInfo.getTerminalType());
-			logDaoBean.setUpdateTime(currentTime);
-			payInfoDao.insertPaymentLog(logDaoBean);
-			
-			
-
 			Map<String, String> params = new HashMap<String, String>();
 
 			params.put("appid", thirdPartnerInfo.getAppId());
@@ -271,6 +254,22 @@ public class ChannelWechatService extends ChannelBaseService {
 						Message.getMessage(ErrorCode.ERR_CONNECT_WECHAT));
 			}
 			
+			PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
+			logDaoBean.setBillId(refundBillId);
+			logDaoBean.setBuyerId(billInfo.getBuyerId());
+			logDaoBean.setIp(remoteIp);
+			logDaoBean.setMessage(ret);
+			logDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
+			logDaoBean.setSpId(reqBean.getSpId());
+			logDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
+			logDaoBean.setStatus(Constants.REFUNDSTATUS_WAIT);
+			logDaoBean.setTotalFee(reqBean.getAmount());
+			logDaoBean.setType(billInfo.getType());
+			logDaoBean.setTerminalType(billInfo.getTerminalType());
+			logDaoBean.setUpdateTime(currentTime);
+			payInfoDao.insertPaymentLog(logDaoBean);
+			
+			
 			RefundInfoDaoBean refundInfoDaoBean = new RefundInfoDaoBean();
 			refundInfoDaoBean.setId(refundBillId);
 			refundInfoDaoBean.setBillId(billInfo.getId());
@@ -285,8 +284,8 @@ public class ChannelWechatService extends ChannelBaseService {
 			refundInfoDaoBean.setTradeNo(billInfo.getTradeNo());
 			refundInfoDaoBean.setMessage(ret);
 			refundInfoDaoBean.setType(billInfo.getType());
-			refundInfoDaoBean.setStatus(Constants.REFUNDSTATUS_SUCCESS);
-			refundInfoDaoBean.setNotifyStatus(Constants.COMMON_STATUS_YES);
+			refundInfoDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
+			refundInfoDaoBean.setNotifyStatus(Constants.COMMON_STATUS_NO);
 			refundInfoDaoBean.setCreateTime(currentTime);
 			refundInfoDaoBean.setUpdateTime(currentTime);
 			payInfoDao.insertRefundInfo(refundInfoDaoBean);
