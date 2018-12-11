@@ -267,7 +267,7 @@ public class NotifyService {
 		PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
 		logDaoBean.setBillId(refundInfo.getId());
 		logDaoBean.setIp(reqBean.getClientIp());
-		logDaoBean.setMessage(refundInfo.getMessage());
+		logDaoBean.setMessage(reqBean.getMessage());
 		logDaoBean.setOutTradeNo(refundInfo.getOutRefundNo());
 		logDaoBean.setSpId(refundInfo.getSpId());
 		logDaoBean.setIsRefund(1);

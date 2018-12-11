@@ -151,7 +151,7 @@ public class NotifyController {
 				
 			Map<String, String> params = WechatXmlParse.parse(xmlBuff.toString());
 			
-			if (!"SUCCESS".equalsIgnoreCase(params.get("result_code"))) {
+			if (!"SUCCESS".equalsIgnoreCase(params.get("return_code"))) {
 				rsp.setContentType("text/xml");
 				rsp.getOutputStream().write(WECHAT_RSP_SUCCESS.getBytes());
 				rsp.getOutputStream().flush();
@@ -177,7 +177,7 @@ public class NotifyController {
 			reqBean.setRefundFee(Long.parseLong(refundParams.get("refund_fee")));
 			reqBean.setRefundId(refundParams.get("refund_id"));
 			reqBean.setRefundStatus("SUCCESS".equals(refundParams.get("refund_status"))? Constants.REFUNDSTATUS_SUCCESS : Constants.REFUNDSTATUS_ERROR );
-			reqBean.setTotalFee(Long.parseLong(refundParams.get("total_fees")));
+			reqBean.setTotalFee(Long.parseLong(refundParams.get("total_fee")));
 			reqBean.setTradeNo(refundParams.get("transaction_id"));
 			reqBean.setUpdateTime(ds.parse(refundParams.get("success_time")).getTime());
 			Result<Void> res = notifyService.handleRefundNotification(reqBean);
