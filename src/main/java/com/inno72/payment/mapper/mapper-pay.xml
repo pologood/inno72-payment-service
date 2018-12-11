@@ -160,6 +160,9 @@
     	SELECT * from INNO72_PAYMENT_REFUND_INFO WHERE ID=#{id}
     </select>
     
+    <select id="getRefundInfoBySpidOutRefundNo" resultMap="RefundInfoDaoMap">
+    	SELECT * from INNO72_PAYMENT_REFUND_INFO WHERE SP_ID=#{spId} AND OUT_REFUND_NO=#{outRefundNo}
+    </select>
    
     <update id="updateRefundNotifyStatus">
     	UPDATE INNO72_PAYMENT_REFUND_INFO SET NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}

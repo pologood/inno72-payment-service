@@ -46,6 +46,8 @@ public interface PayInfoDao {
 	
 	public RefundInfoDaoBean getRefundInfo(@Param("id")long id);
 	
+	public RefundInfoDaoBean getRefundInfoBySpidOutRefundNo(@Param("spId")String spId, @Param("outRefundNo")String outRefundNo);
+	
 	public int updateRefundNotifyStatus(@Param("id")long id, @Param("notifyStatus")int notifyStatus, @Param("updateTime")long updateTime, @Param("srcUpdateTime")long srcUpdateTime);
 	
 	public int updateRefundStatus(@Param("id")long id, @Param("refundTradeNo")String refundTradeNo, 

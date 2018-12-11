@@ -15,6 +15,7 @@ import com.inno72.payment.mapper.PayInfoDao;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
 import com.inno72.payment.model.PaymentLogDaoBean;
+import com.inno72.payment.model.RefundInfoDaoBean;
 
 public abstract class ChannelBaseService implements ChannelService{
 
@@ -87,7 +88,13 @@ public abstract class ChannelBaseService implements ChannelService{
 		if(billInfo.getIsRefund() == 1) {
 			logger.warn("bill had refound");
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
-
+		}
+		
+		RefundInfoDaoBean refundInfoDaoBean = payInfoDao.getRefundInfoBySpidOutRefundNo(reqBean.getSpId(), reqBean.getOutRefundNo());
+		
+		if(refundInfoDaoBean != null) {
+			logger.warn("outRefundNo had existed");
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "outRefundNo"));
 		}
 		
 		if(reqBean.getAmount() != billInfo.getTotalFee()) {
