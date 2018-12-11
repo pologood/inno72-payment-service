@@ -56,32 +56,40 @@ public abstract class ChannelBaseService implements ChannelService{
 	}
 	
 	
-	protected BillInfoDaoBean checkRefundRequest(ReqRefundBillBean reqBean) throws TransException{
+	public void checkRefundRequest(ReqRefundBillBean reqBean, BillInfoDaoBean billInfo) throws TransException{
 		
+		if(StringUtils.isBlank(reqBean.getOutRefundNo())){
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "outRefundNo"));
+		}
 		
-		if(StringUtils.isEmpty(reqBean.getOutTradeNo())){
-			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo"));
+		if(StringUtils.isBlank(reqBean.getOutTradeNo())){
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "outTradeNo"));
+		}
+		
+		if(StringUtils.isBlank(reqBean.getReason())){
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "reason"));
 		}
 		
 		if(reqBean.getAmount() <= 0) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
 		}
 		
-		BillInfoDaoBean billInfo = payInfoDao.getBillInfoByOutTradeNo(reqBean.getSpId(), reqBean.getOutTradeNo());
-		
 		if(billInfo == null){
 			logger.warn(String.format("bill not found spid:%s, outTradeNo:%s", reqBean.getSpId(), reqBean.getOutTradeNo()));
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "OutTradeNo or spid"));
 		}
 		
+		if(billInfo.getIsRefund() == 1) {
+			logger.warn("bill had refound");
+			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
+
+		}
 		
-		if(billInfo.getIsRefund() == 1 && (billInfo.getRefundAmount() + reqBean.getAmount() > billInfo.getTotalFee())) {
+		if(reqBean.getAmount() != billInfo.getTotalFee()) {
 			logger.warn("bill can not refound amount is wrong");
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
 		}
 		
-		
-		return billInfo;
 	}
 	
 	

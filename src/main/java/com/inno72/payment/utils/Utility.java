@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +13,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utility {
 
 	private final static String[] strDigits = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d",
 			"e", "f" };
 
+	private static Logger logger = LoggerFactory.getLogger(Utility.class);
 	
 
 	public static String GetMD5Code(byte[] bByte) {
@@ -96,32 +100,48 @@ public class Utility {
 			
 			field.setAccessible(true);
 			
-			String type = field.getType().toString();
+			String type = field.getType().getSimpleName();
 			String value = "";
 			String key = field.getName();
 			switch(type){
 				case "Long":
 				case "long":
-					value = field.get(obj) != null ? Long.toString((Long)field.get(obj)):"";
+					value = field.get(obj) != null ? Long.toString((Long)field.get(obj)): null;
 					break;
 				case "int":
 				case "Integer":
-					value = field.get(obj) != null ? Long.toString((Integer)field.get(obj)):"";
+					value = field.get(obj) != null ? Long.toString((Integer)field.get(obj)): null;
 					break;
 				case "String":
 					value = (String)field.get(obj);
 					break;
 			}
-				
-			signMap.put(key, value);
+			
+			if(value != null) {
+				signMap.put(key, value);
+			}
 		}
 		
 		signMap.remove("sign");
 		
 		String sign = createLinkString(signMap) + "&" + secureKey;
+		
+		logger.info("perpare sign is " + sign);
+		
 		sign = GetMD5Code(sign.getBytes("utf-8"));
+		
 		return sign;
 		
 	}
+	
+	public static byte[] decodeBase64(String encodedText){
+        final Base64.Decoder decoder = Base64.getDecoder();
+        return decoder.decode(encodedText);
+    }
+    
+    public static String encodeBase64(byte[] data){
+        final Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(data);
+    }
 		
 }

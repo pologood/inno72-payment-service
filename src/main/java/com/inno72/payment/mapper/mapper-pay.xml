@@ -60,6 +60,27 @@
 	</resultMap>
 	
 	
+	<resultMap id="RefundInfoDaoMap" type="com.inno72.payment.model.RefundInfoDaoBean">
+		<id property="id" 					column="ID" />
+		<result property="spId" 			column="SP_ID"/>
+		<result property="billId" 			column="BILL_ID"/>
+		<result property="outTradeNo" 		column="OUT_TRADE_NO"/>
+		<result property="outRefundNo" 		column="OUT_REFUND_NO"/>
+		<result property="refundTradeNo" 	column="REFUND_TRADE_NO"/>
+		<result property="tradeNo" 			column="TRADE_NO"/>
+		<result property="type" 			column="TYPE"/>
+		<result property="status" 			column="STATUS"/>
+		<result property="notifyStatus" 	column="NOTIFY_STATUS"/>
+		<result property="payFee" 			column="PAY_FEE"/>
+		<result property="refundFee" 		column="REFUND_FEE"/>
+		<result property="reason" 			column="REASON"/>
+		<result property="notifyUrl" 		column="NOTIFY_URL"/>
+		<result property="message" 			column="MESSAGE"/>
+		<result property="createTime" 		column="CREATE_TIME"/>
+		<result property="updateTime" 		column="UPDATE_TIME"/>
+	</resultMap>
+	
+	
     <select id="getSpInfo"  resultMap="PaySpInfoDaoMap">  
         SELECT * FROM INNO72_PAYMENT_SP_INFO WHERE ID=#{spId} and STATUS=1
     </select>
@@ -105,13 +126,13 @@
     </insert>
     
     <update id="updatePaySuccess">
-    	UPDATE INNO72_PAYMENT_PAY_INFO SET TRADE_NO=#{tradeNo}, NOTIFY_STATUS=#{notifyStatus}, NOTIFY_ID=#{notifyId}, NOTIFY_TIME=#{notifyTime}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
+    	UPDATE INNO72_PAYMENT_PAY_INFO SET TRADE_NO=#{tradeNo}, NOTIFY_STATUS=#{notifyStatus}, BUYER_ID=#{buyerId}, NOTIFY_ID=#{notifyId}, NOTIFY_TIME=#{notifyTime}, STATUS=#{status}, UPDATE_TIME=#{updateTime}
     	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
     </update>
     
     <update id="updateNotifyStatus">
     	UPDATE INNO72_PAYMENT_PAY_INFO SET NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}
-    	WHERE ID=#{billId}
+    	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
     </update>
     
     <update id="updateStatus">
@@ -122,6 +143,32 @@
     <update id="updatePayRefundInfo">
     	UPDATE INNO72_PAYMENT_PAY_INFO SET IS_REFUND=#{isRefund}, REFUND_AMOUNT=#{refundAmount} ,UPDATE_TIME=#{updateTime}
     	WHERE ID=#{billId} AND UPDATE_TIME=#{srcUpdateTime}
+    </update>
+    
+    <insert id="insertRefundInfo" parameterType="com.inno72.payment.model.RefundInfoDaoBean">
+    	INSERT INTO INNO72_PAYMENT_REFUND_INFO(ID, SP_ID, BILL_ID, OUT_TRADE_NO, OUT_REFUND_NO,
+    			TRADE_NO, REFUND_TRADE_NO, TYPE, STATUS, NOTIFY_STATUS, PAY_FEE,
+    			REFUND_FEE, REASON, NOTIFY_URL, MESSAGE, CREATE_TIME, UPDATE_TIME)
+    	VALUES(#{id},#{spId},#{billId},#{outTradeNo},#{outRefundNo},
+    			#{tradeNo},#{refundTradeNo},#{type},#{status},#{notifyStatus},#{payFee},
+    			#{refundFee},#{reason},#{notifyUrl},#{message},#{createTime},#{updateTime})
+    </insert>
+    
+
+       
+    <select id="getRefundInfo" resultMap="RefundInfoDaoMap">
+    	SELECT * from INNO72_PAYMENT_REFUND_INFO WHERE ID=#{id}
+    </select>
+    
+   
+    <update id="updateRefundNotifyStatus">
+    	UPDATE INNO72_PAYMENT_REFUND_INFO SET NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{id} AND UPDATE_TIME=#{srcUpdateTime}
+    </update>
+    
+    <update id="updateRefundStatus">
+    	UPDATE INNO72_PAYMENT_REFUND_INFO SET MESSAGE=#{message}, REFUND_TRADE_NO=#{refundTradeNo}, STATUS=#{status}, NOTIFY_STATUS=#{notifyStatus}, UPDATE_TIME=#{updateTime}
+    	WHERE ID=#{id} AND UPDATE_TIME=#{srcUpdateTime}
     </update>
     
 </mapper> 

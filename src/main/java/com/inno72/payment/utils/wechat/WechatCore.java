@@ -13,6 +13,8 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Set;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpEntity;
@@ -24,8 +26,20 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 
+import com.inno72.payment.utils.Utility;
+
 
 public class WechatCore {
+	
+	private static final String ALGORITHM_MODE_PADDING = "AES/ECB/PKCS5Padding";  
+	
+	public static String decryptData(String info, String secureKey) throws Exception {  
+		
+		SecretKeySpec key = new SecretKeySpec(Utility.GetMD5Code(secureKey.getBytes()).toLowerCase().getBytes(), "AES");  
+        Cipher cipher = Cipher.getInstance(ALGORITHM_MODE_PADDING);  
+        cipher.init(Cipher.DECRYPT_MODE, key);  
+        return new String(cipher.doFinal(Utility.decodeBase64(info)));  
+    }  
 
 	public static String makeXml(Map<String, String> params) {
 

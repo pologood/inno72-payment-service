@@ -33,6 +33,8 @@ public class ReqCreateBillBean {
 	private String clientIp;
 			
 	private String extra;
+	
+	private String sign;
 
 	public String getSpId() {
 		return spId;
@@ -90,19 +92,19 @@ public class ReqCreateBillBean {
 		this.notifyUrl = notifyUrl;
 	}
 
-	public Integer getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
-	public Integer getTerminalType() {
+	public int getTerminalType() {
 		return terminalType;
 	}
 
-	public void setTerminalType(Integer terminalType) {
+	public void setTerminalType(int terminalType) {
 		this.terminalType = terminalType;
 	}
 
@@ -120,6 +122,14 @@ public class ReqCreateBillBean {
 
 	public void setTransTimeout(Integer transTimeout) {
 		this.transTimeout = transTimeout;
+	}
+
+	public Integer getQrTimeout() {
+		return qrTimeout;
+	}
+
+	public void setQrTimeout(Integer qrTimeout) {
+		this.qrTimeout = qrTimeout;
 	}
 
 	public long getUnitPrice() {
@@ -154,12 +164,12 @@ public class ReqCreateBillBean {
 		this.extra = extra;
 	}
 
-	public Integer getQrTimeout() {
-		return qrTimeout;
+	public String getSign() {
+		return sign;
 	}
 
-	public void setQrTimeout(Integer qrTimeout) {
-		this.qrTimeout = qrTimeout;
+	public void setSign(String sign) {
+		this.sign = sign;
 	}
 
 	@Override
@@ -168,9 +178,12 @@ public class ReqCreateBillBean {
 				+ totalFee + ", returnUrl=" + returnUrl + ", merchantUrl=" + merchantUrl + ", notifyUrl=" + notifyUrl
 				+ ", type=" + type + ", terminalType=" + terminalType + ", remark=" + remark + ", transTimeout="
 				+ transTimeout + ", qrTimeout=" + qrTimeout + ", unitPrice=" + unitPrice + ", quantity=" + quantity
-				+ ", clientIp=" + clientIp + ", extra=" + extra + "]";
+				+ ", clientIp=" + clientIp + ", extra=" + extra + ", sign=" + sign + "]";
 	}
 
+	
+
+	
 	
 	
 }

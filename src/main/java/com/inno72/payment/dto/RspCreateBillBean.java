@@ -2,6 +2,10 @@ package com.inno72.payment.dto;
 
 public class RspCreateBillBean {
 
+	private String spId;
+	
+	private String outTradeNo;
+	
 	private Integer type;
 
 	private Integer terminalType;
@@ -12,8 +16,6 @@ public class RspCreateBillBean {
 	
 	private String qrCode;
 	
-	private String qrCodeUrl;
-
 	public Integer getType() {
 		return type;
 	}
@@ -54,21 +56,27 @@ public class RspCreateBillBean {
 		this.qrCode = qrCode;
 	}
 
-	public String getQrCodeUrl() {
-		return qrCodeUrl;
+	public String getSpId() {
+		return spId;
 	}
 
-	public void setQrCodeUrl(String qrCodeUrl) {
-		this.qrCodeUrl = qrCodeUrl;
+	public void setSpId(String spId) {
+		this.spId = spId;
+	}
+
+	public String getOutTradeNo() {
+		return outTradeNo;
+	}
+
+	public void setOutTradeNo(String outTradeNo) {
+		this.outTradeNo = outTradeNo;
 	}
 
 	@Override
 	public String toString() {
-		return "RspCreateBillBean [type=" + type + ", terminalType=" + terminalType + ", billId=" + billId
-				+ ", prepayId=" + prepayId + ", qrCode=" + qrCode + ", qrCodeUrl=" + qrCodeUrl + "]";
+		return "RspCreateBillBean [spId=" + spId + ", outTradeNo=" + outTradeNo + ", type=" + type + ", terminalType="
+				+ terminalType + ", billId=" + billId + ", prepayId=" + prepayId + ", qrCode=" + qrCode + "]";
 	}
-	
-	
 
 	
 	

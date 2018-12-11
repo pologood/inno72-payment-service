@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
 import com.inno72.payment.model.PaymentLogDaoBean;
+import com.inno72.payment.model.RefundInfoDaoBean;
 import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 
 public interface PayInfoDao {
@@ -25,12 +26,12 @@ public interface PayInfoDao {
 
 	public int insertPaymentLog(PaymentLogDaoBean bean);
 
-	public int updatePaySuccess(@Param("billId") Long billId, @Param("tradeNo") String tradeNo,
+	public int updatePaySuccess(@Param("billId") Long billId, @Param("tradeNo") String tradeNo, @Param("buyerId")String buyerId,
 			@Param("notifyId") String notifyId, @Param("notifyTime") long notifyTime, @Param("status") int status, @Param("notifyStatus")int notifyStatus,
 			@Param("updateTime") long updateTime, @Param("srcUpdateTime") long srcUpdateTime);
 
 	public int updateNotifyStatus(@Param("billId") Long billId, @Param("notifyStatus") int notifyStatus,
-			@Param("updateTime") long updateTime);
+			@Param("updateTime") long updateTime, @Param("srcUpdateTime") long srcUpdateTime);
 
 	public int updateStatus(@Param("billId") Long billId, @Param("status") int status,
 			@Param("updateTime") long updateTime, @Param("srcUpdateTime") long srcUpdateTime);
@@ -38,5 +39,17 @@ public interface PayInfoDao {
 	public int updatePayRefundInfo(@Param("billId") Long billId, @Param("isRefund") int isRefund,
 			@Param("refundAmount") Long refundAmount,
 			@Param("updateTime") long updateTime, @Param("srcUpdateTime") long srcUpdateTime);
+	
+	
+	public int insertRefundInfo(RefundInfoDaoBean refundInfoDaoBean);
+	
+	
+	public RefundInfoDaoBean getRefundInfo(@Param("id")long id);
+	
+	public int updateRefundNotifyStatus(@Param("id")long id, @Param("notifyStatus")int notifyStatus, @Param("updateTime")long updateTime, @Param("srcUpdateTime")long srcUpdateTime);
+	
+	public int updateRefundStatus(@Param("id")long id, @Param("refundTradeNo")String refundTradeNo, 
+			@Param("status")int status, @Param("notifyStatus")int notifyStatus, @Param("message")String message,
+			@Param("updateTime")long updateTime, @Param("srcUpdateTime")long srcUpdateTime);
 
 }

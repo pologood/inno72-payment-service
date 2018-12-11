@@ -24,6 +24,8 @@ public class ReqNotifyBean {
 	
 	private String notifyParam;
 	
+	private String buyerId;
+	
 	public long getBillId() {
 		return billId;
 	}
@@ -110,6 +112,14 @@ public class ReqNotifyBean {
 
 	public void setNotifyParam(String notifyParam) {
 		this.notifyParam = notifyParam;
+	}
+
+	public String getBuyerId() {
+		return buyerId;
+	}
+
+	public void setBuyerId(String buyerId) {
+		this.buyerId = buyerId;
 	}
 	
 	

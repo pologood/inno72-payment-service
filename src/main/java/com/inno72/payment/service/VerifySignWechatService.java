@@ -50,5 +50,6 @@ public class VerifySignWechatService implements VerifySignService {
         logger.error("wechat sign is wrong");	
 		return false;
 	}
+	
 
 }

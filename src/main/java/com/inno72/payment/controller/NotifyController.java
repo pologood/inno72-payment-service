@@ -25,9 +25,12 @@ import com.inno72.common.Result;
 import com.inno72.payment.common.Constants;
 import com.inno72.payment.common.TransException;
 import com.inno72.payment.dto.ReqNotifyBean;
+import com.inno72.payment.dto.ReqRefundNotifyBean;
+import com.inno72.payment.mapper.PayInfoDao;
 import com.inno72.payment.service.NotifyService;
 import com.inno72.payment.service.VerifySignAlipayService;
 import com.inno72.payment.service.VerifySignWechatService;
+import com.inno72.payment.utils.wechat.WechatCore;
 import com.inno72.payment.utils.wechat.WechatXmlParse;
 
 @Controller
@@ -44,6 +47,9 @@ public class NotifyController {
 
 	@Autowired
 	private NotifyService notifyService;
+	
+	@Autowired
+	private PayInfoDao payInfoDao;
 
 
 	private static final String WECHAT_RSP_SUCCESS = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
@@ -94,6 +100,7 @@ public class NotifyController {
 			reqNotifyBean.setNotifyId(req.getParameter("notify_id"));
 			reqNotifyBean.setUpdateTime(System.currentTimeMillis());
 			reqNotifyBean.setNotifyParam(JSON.toJSONString(params));
+			reqNotifyBean.setBuyerId(req.getParameter("buyer_id"));
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -115,6 +122,79 @@ public class NotifyController {
 		} catch (TransException e) {
 			logger.error(e.getMessage(), e);
 			rsp.sendError(401);
+		}
+	}
+	
+	
+	
+	@RequestMapping("/wechat/refund/{spId}/{terminalType}")
+	public void notifyWechatRefund(@PathVariable String spId, @PathVariable int terminalType, HttpServletRequest req, HttpServletResponse rsp) throws IOException{
+		
+		if (StringUtils.isBlank(spId)) {
+			logger.info("spid is blank");
+			rsp.sendError(401);
+			return;
+		}
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		StringBuilder xmlBuff = new StringBuilder();
+
+		String line = null;
+		
+		try {
+			logger.info(String.format("wechat refund notify %s:%s", req.getRequestURI(), xmlBuff.toString()));
+			
+			while ((line = in.readLine()) != null) {
+				xmlBuff.append(line);
+			}
+			
+			Map<String, String> params = WechatXmlParse.parse(xmlBuff.toString());
+			
+			if (!"SUCCESS".equalsIgnoreCase(params.get("result_code"))) {
+				rsp.setContentType("text/xml");
+				rsp.getOutputStream().write(WECHAT_RSP_SUCCESS.getBytes());
+				rsp.getOutputStream().flush();
+				return;
+			}
+			
+			SimpleDateFormat ds = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			String reqInfo = params.get("req_info");
+			
+			String secureKey = payInfoDao.getSpSecureKey(spId, Constants.PAY_CHANNEL_WECHAT, terminalType);
+			
+			String refundInfo = WechatCore.decryptData(reqInfo, secureKey);
+			
+			logger.info(String.format("wechat refund notify decrypt %s", refundInfo));
+			
+			Map<String, String> refundParams = WechatXmlParse.parse(refundInfo);
+			
+			ReqRefundNotifyBean reqBean = new ReqRefundNotifyBean();
+			reqBean.setClientIp(req.getRemoteAddr());
+			reqBean.setMessage(refundInfo);
+			reqBean.setOutRefundNo(Long.parseLong(refundParams.get("out_refund_no")));
+			reqBean.setRefundFee(Long.parseLong(refundParams.get("refund_fee")));
+			reqBean.setRefundId(refundParams.get("refund_id"));
+			reqBean.setRefundStatus("SUCCESS".equals(refundParams.get("refund_status"))? Constants.REFUNDSTATUS_SUCCESS : Constants.REFUNDSTATUS_ERROR );
+			reqBean.setTotalFee(Long.parseLong(refundParams.get("total_fees")));
+			reqBean.setTradeNo(refundParams.get("transaction_id"));
+			reqBean.setUpdateTime(ds.parse(refundParams.get("success_time")).getTime());
+			Result<Void> res = notifyService.handleRefundNotification(reqBean);
+			
+			if (res.getCode() != Constants.RSP_RET_OK) {
+				rsp.sendError(401);
+				return;
+			} else {
+				logger.info("wechat refunc notify success!!!");
+				rsp.getOutputStream().write("success".getBytes());
+				rsp.getOutputStream().flush();
+				return;
+			}
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			rsp.sendError(401);
+			return;
 		}
 	}
 
@@ -160,14 +240,16 @@ public class NotifyController {
 			reqNotifyBean.setNotifyId("0");
 			reqNotifyBean.setNotifyTime(ds.parse(params.get("time_end")).getTime());
 
-
 			reqNotifyBean.setRspCode("00");
 			reqNotifyBean.setTradeNo(params.get("transaction_id"));
+			reqNotifyBean.setBuyerId(params.get("openid"));
+			
 			reqNotifyBean.setRspMsg("ok");
 			reqNotifyBean.setTotalFee(Long.parseLong(params.get("total_fee")));
 			reqNotifyBean.setStatus(Constants.PAYSTATUS_TRADE_SUCCESS);
 			reqNotifyBean.setUpdateTime(System.currentTimeMillis());
 			reqNotifyBean.setNotifyParam(JSON.toJSONString(params));
+			
 			
 			Result<Void> res = notifyService.handleNotification(reqNotifyBean);
 			if (res.getCode() != Constants.RSP_RET_OK) {

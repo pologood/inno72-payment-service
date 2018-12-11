@@ -42,6 +42,11 @@ public class WechatXmlParse extends DefaultHandler{
 		
 	}
 	
+	@Override
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+		this.index = null;
+	}
+	
 	public Map<String, String> getElements() {
 		return elements;
 	}

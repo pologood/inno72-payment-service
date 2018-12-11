@@ -46,6 +46,10 @@ public class BillService {
 		return payInfoDao.getThirdPartnerInfo(groupId, type, terminalType);
 	}
 	
+	public BillInfoDaoBean getBillInfoByOutTradeNo (String spId, String outTradeNo) {
+		return payInfoDao.getBillInfoByOutTradeNo(spId, outTradeNo);
+	}
+	
 	public Result<RspQueryBillBean> queryBill(ReqQueryBillBean reqBean) throws TransException {
 		
 		if(StringUtils.isEmpty(reqBean.getSpId())){

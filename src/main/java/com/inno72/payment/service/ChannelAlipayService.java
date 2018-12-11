@@ -18,7 +18,9 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePrecreateRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePrecreateResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.inno72.common.Result;
 import com.inno72.payment.common.Constants;
 import com.inno72.payment.common.ErrorCode;
@@ -30,6 +32,8 @@ import com.inno72.payment.dto.RspCreateBillBean;
 import com.inno72.payment.dto.RspRefundBillBean;
 import com.inno72.payment.model.BillInfoDaoBean;
 import com.inno72.payment.model.PaySpInfoDaoBean;
+import com.inno72.payment.model.PaymentLogDaoBean;
+import com.inno72.payment.model.RefundInfoDaoBean;
 import com.inno72.payment.model.ThirdPartnerInfoDaoBean;
 
 
@@ -137,10 +141,12 @@ public class ChannelAlipayService extends ChannelBaseService {
 			rspBean.setData(rspContent);
 			rspBean.setCode(Constants.RSP_RET_OK);
 			rspBean.setMsg(Constants.RSP_MSG_OK);
+			rspBean.getData().setSpId(spInfo.getId());
+			rspBean.getData().setOutTradeNo(reqBean.getOutTradeNo());
 			rspBean.getData().setBillId(Long.toString(billId));
 			rspBean.getData().setType(reqBean.getType());
 			rspBean.getData().setTerminalType(reqBean.getTerminalType());
-			rspBean.getData().setQrCodeUrl(response.getQrCode());
+			rspBean.getData().setQrCode(response.getQrCode());
 			return rspBean;
 
 		}
@@ -151,23 +157,110 @@ public class ChannelAlipayService extends ChannelBaseService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	public Result<RspRefundBillBean> refundBill(ReqRefundBillBean reqBean, PaySpInfoDaoBean spInfo,
+	public Result<RspRefundBillBean> refundBill(long refundBillId, ReqRefundBillBean reqBean, BillInfoDaoBean billInfo, PaySpInfoDaoBean spInfo,
 			ThirdPartnerInfoDaoBean thirdPartnerInfo, String remoteIp) throws TransException {
+			
+		checkRefundRequest(reqBean, billInfo);
 		
-		
-		BillInfoDaoBean billInfo = checkRefundRequest(reqBean);
+		long currentTime = System.currentTimeMillis();
+	
+		if(payInfoDao.updatePayRefundInfo(billInfo.getId(), Constants.COMMON_STATUS_YES, 
+				reqBean.getAmount(), currentTime, billInfo.getUpdateTime()) == 0) {
+			logger.warn("refund data conflict billId:" + billInfo.getId());
+			throw new TransException(ErrorCode.ERR_DATA_CONFLICT, Message.getMessage(ErrorCode.ERR_DATA_CONFLICT));
+		}
 		
 		AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_URL,
 				thirdPartnerInfo.getAppId(), thirdPartnerInfo.getPrivateKey(), "json", Constants.SERVICE_CHARSET,
 				thirdPartnerInfo.getThirdpartnerPublicKey(), "RSA2");
 		
-		
 		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("out_trade_no", billInfo.getId().toString());
+		params.put("refund_amount", new BigDecimal(reqBean.getAmount()).divide(new BigDecimal(100)).toString());
+		params.put("refund_reason", reqBean.getReason());
 		
+		PaymentLogDaoBean logBeforeDaoBean = new PaymentLogDaoBean();
+		logBeforeDaoBean.setBillId(refundBillId);
+		logBeforeDaoBean.setBuyerId("");
+		logBeforeDaoBean.setIp(remoteIp);
+		logBeforeDaoBean.setMessage("wait refund");
+		logBeforeDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
+		logBeforeDaoBean.setSpId(reqBean.getSpId());
+		logBeforeDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
+		logBeforeDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
+		logBeforeDaoBean.setTotalFee(reqBean.getAmount());
+		logBeforeDaoBean.setType(billInfo.getType());
+		logBeforeDaoBean.setUpdateTime(currentTime);
+		payInfoDao.insertPaymentLog(logBeforeDaoBean);
 		
+		AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+		request.setBizContent(JSON.toJSON(params).toString());
 		
+		AlipayTradeRefundResponse response;
+		try {
+			response = alipayClient.execute(request);
+			if (response.isSuccess()) {
+				logger.info(
+						String.format("alipay replay ok: %s, %s", response.getOutTradeNo(), response.getBody()));
+				
+				RefundInfoDaoBean refundInfoDaoBean = new RefundInfoDaoBean();
+				refundInfoDaoBean.setId(refundBillId);
+				refundInfoDaoBean.setBillId(billInfo.getId());
+				refundInfoDaoBean.setReason(reqBean.getReason());
+				refundInfoDaoBean.setPayFee(billInfo.getTotalFee());
+				refundInfoDaoBean.setNotifyUrl(reqBean.getNotifyUrl());
+				refundInfoDaoBean.setRefundFee(reqBean.getAmount());
+				refundInfoDaoBean.setSpId(billInfo.getSpId());
+				refundInfoDaoBean.setOutTradeNo(billInfo.getOutTradeNo());
+				refundInfoDaoBean.setOutRefundNo(reqBean.getOutRefundNo());
+				refundInfoDaoBean.setRefundTradeNo(response.getTradeNo());
+				refundInfoDaoBean.setTradeNo(billInfo.getTradeNo());
+				refundInfoDaoBean.setMessage(response.getBody());
+				refundInfoDaoBean.setType(billInfo.getType());
+				refundInfoDaoBean.setStatus(Constants.REFUNDSTATUS_SUCCESS);
+				refundInfoDaoBean.setNotifyStatus(Constants.COMMON_STATUS_YES);
+				refundInfoDaoBean.setCreateTime(currentTime);
+				refundInfoDaoBean.setUpdateTime(currentTime);
+				payInfoDao.insertRefundInfo(refundInfoDaoBean);
+				
+				PaymentLogDaoBean afterLogDaoBean = new PaymentLogDaoBean();
+				afterLogDaoBean.setBillId(refundBillId);
+				afterLogDaoBean.setBuyerId("");
+				afterLogDaoBean.setIp(remoteIp);
+				afterLogDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
+				afterLogDaoBean.setSpId(reqBean.getSpId());
+				afterLogDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
+				afterLogDaoBean.setStatus(Constants.REFUNDSTATUS_SUCCESS);
+				afterLogDaoBean.setMessage("refund success");
+				afterLogDaoBean.setTotalFee(reqBean.getAmount());
+				afterLogDaoBean.setType(billInfo.getType());
+				afterLogDaoBean.setUpdateTime(currentTime);
+				payInfoDao.insertPaymentLog(afterLogDaoBean);
+				
+			} else {
+				logger.warn(String.format("alipay replay error: %s,%s", response.getCode(), response.getMsg()));
+				throw new TransException(ErrorCode.ERR_CONNECT_ALIPAY,
+						Message.getMessage(ErrorCode.ERR_CONNECT_ALIPAY));
+			}
+		} catch (AlipayApiException e) {
+			logger.error(e.getErrMsg(), e);
+			throw new TransException(ErrorCode.ERR_CONNECT_ALIPAY,
+					Message.getMessage(ErrorCode.ERR_CONNECT_ALIPAY));
+		}
 		
-		return null;
+		Result<RspRefundBillBean> rspBean = new Result<RspRefundBillBean>();
+		RspRefundBillBean rspContent = new RspRefundBillBean();
+		rspBean.setData(rspContent);
+		rspBean.setCode(Constants.RSP_RET_OK);
+		rspBean.setMsg(Constants.RSP_MSG_OK);
+		rspContent.setBillId(billInfo.getId().toString());
+		rspContent.setSpId(billInfo.getSpId());
+		rspContent.setOutTradeNo(billInfo.getOutTradeNo());
+		rspContent.setOutRefundNo(reqBean.getOutRefundNo());
+		rspContent.setRefundFee(reqBean.getAmount());
+		rspContent.setStatus(Constants.REFUNDSTATUS_SUCCESS);
+		
+		return rspBean;
 	}
 
 }

@@ -222,8 +222,19 @@ public class RspQueryBillBean {
 		this.updateTime = updateTime;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "RspQueryBillBean [id=" + id + ", spId=" + spId + ", terminalType=" + terminalType + ", type=" + type
+				+ ", status=" + status + ", outTradeNo=" + outTradeNo + ", subject=" + subject + ", sellerId="
+				+ sellerId + ", buyerId=" + buyerId + ", isRefund=" + isRefund + ", notifyStatus=" + notifyStatus
+				+ ", totalFee=" + totalFee + ", refundAmount=" + refundAmount + ", price=" + price + ", quantity="
+				+ quantity + ", notifyUrl=" + notifyUrl + ", returnUrl=" + returnUrl + ", showUrl=" + showUrl
+				+ ", notifyId=" + notifyId + ", notifyTime=" + notifyTime + ", createTime=" + createTime
+				+ ", updateTime=" + updateTime + "]";
+	}
 
+	
+	
 	
 	
 	
