@@ -120,7 +120,7 @@ public class NotifyService {
 
 		PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
 		logDaoBean.setBillId(repBean.getBillId());
-		logDaoBean.setBuyerId(repBean.getBuyerId());
+		logDaoBean.setBuyerId(billInfoBean.getBuyerId());
 		logDaoBean.setIp(repBean.getClientIp());
 		logDaoBean.setMessage(repBean.getNotifyParam());
 		logDaoBean.setOutTradeNo(billInfoBean.getOutTradeNo());

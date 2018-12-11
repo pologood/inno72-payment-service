@@ -262,7 +262,7 @@ public class ChannelWechatService extends ChannelBaseService {
 			logDaoBean.setOutTradeNo(reqBean.getOutRefundNo());
 			logDaoBean.setSpId(reqBean.getSpId());
 			logDaoBean.setIsRefund(Constants.COMMON_STATUS_YES);
-			logDaoBean.setStatus(Constants.REFUNDSTATUS_WAIT);
+			logDaoBean.setStatus(Constants.REFUNDSTATUS_APPLY);
 			logDaoBean.setTotalFee(reqBean.getAmount());
 			logDaoBean.setType(billInfo.getType());
 			logDaoBean.setTerminalType(billInfo.getTerminalType());
