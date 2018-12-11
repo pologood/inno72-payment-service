@@ -201,6 +201,7 @@ public class ChannelWechatService extends ChannelBaseService {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Result<RspRefundBillBean> refundBill(long refundBillId, ReqRefundBillBean reqBean, BillInfoDaoBean billInfo, PaySpInfoDaoBean spInfo,
 			ThirdPartnerInfoDaoBean thirdPartnerInfo, String remoteIp) throws TransException {
 
@@ -230,6 +231,8 @@ public class ChannelWechatService extends ChannelBaseService {
 			logDaoBean.setTerminalType(billInfo.getTerminalType());
 			logDaoBean.setUpdateTime(currentTime);
 			payInfoDao.insertPaymentLog(logDaoBean);
+			
+			
 
 			Map<String, String> params = new HashMap<String, String>();
 
@@ -287,6 +290,7 @@ public class ChannelWechatService extends ChannelBaseService {
 			refundInfoDaoBean.setCreateTime(currentTime);
 			refundInfoDaoBean.setUpdateTime(currentTime);
 			payInfoDao.insertRefundInfo(refundInfoDaoBean);
+			
 
 			Result<RspRefundBillBean> rspBean = new Result<RspRefundBillBean>();
 			RspRefundBillBean rspContent = new RspRefundBillBean();
