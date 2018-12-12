@@ -103,7 +103,8 @@ public class ChannelWechatService extends ChannelBaseService {
 
 		}
 	}
-
+	
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Result<RspCreateBillBean> createBill(long billId, String remoteIp, PaySpInfoDaoBean spInfo,
 			ThirdPartnerInfoDaoBean thirdPartnerInfo, ReqCreateBillBean reqBean) throws TransException {
