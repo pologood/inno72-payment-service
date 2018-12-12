@@ -130,7 +130,7 @@ public class ChannelWechatService extends ChannelBaseService {
 		params.put("fee_type", "CNY");
 		params.put("total_fee", Long.toString(reqBean.getTotalFee()));
 
-		params.put("spbill_create_ip", reqBean.getClientIp());
+		//params.put("spbill_create_ip", reqBean.getClientIp());
 
 		if (reqBean.getTransTimeout() != null) {
 			params.put("time_start", dateFormat.format(new Date(currentTime)));
