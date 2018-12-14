@@ -274,6 +274,7 @@ public class NotifyService {
 		logDaoBean.setSpId(refundInfo.getSpId());
 		logDaoBean.setIsRefund(1);
 		logDaoBean.setStatus(status);
+		logDaoBean.setBuyerId(billInfo.getBuyerId());
 		logDaoBean.setTotalFee(refundInfo.getRefundFee());
 		logDaoBean.setTerminalType(billInfo.getTerminalType());
 		logDaoBean.setType(refundInfo.getType());
