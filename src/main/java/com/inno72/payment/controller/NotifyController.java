@@ -176,7 +176,13 @@ public class NotifyController {
 			reqBean.setOutRefundNo(Long.parseLong(refundParams.get("out_refund_no")));
 			reqBean.setRefundFee(Long.parseLong(refundParams.get("refund_fee")));
 			reqBean.setRefundId(refundParams.get("refund_id"));
-			reqBean.setRefundStatus("SUCCESS".equals(refundParams.get("refund_status"))? Constants.REFUNDSTATUS_SUCCESS : Constants.REFUNDSTATUS_ERROR );
+			if("SUCCESS".equals(refundParams.get("refund_status"))) {
+				reqBean.setRefundStatus(Constants.REFUNDSTATUS_SUCCESS);
+				reqBean.setRspMsg("ok");
+			}else {
+				reqBean.setRefundStatus(Constants.REFUNDSTATUS_ERROR );
+				reqBean.setRspMsg(String.format("%s:%s", refundParams.get("err_code"), refundParams.get("err_code_des")));
+			}
 			reqBean.setTotalFee(Long.parseLong(refundParams.get("total_fee")));
 			reqBean.setTradeNo(refundParams.get("transaction_id"));
 			reqBean.setUpdateTime(ds.parse(refundParams.get("success_time")).getTime());

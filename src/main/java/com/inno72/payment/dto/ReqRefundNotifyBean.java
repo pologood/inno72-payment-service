@@ -18,6 +18,8 @@ public class ReqRefundNotifyBean {
 		
 	private String message;
 	
+	private String rspMsg;
+	
 	private long updateTime;
 
 	public String getTradeNo() {
@@ -92,12 +94,21 @@ public class ReqRefundNotifyBean {
 		this.updateTime = updateTime;
 	}
 
+	public String getRspMsg() {
+		return rspMsg;
+	}
+
+	public void setRspMsg(String rspMsg) {
+		this.rspMsg = rspMsg;
+	}
+
 	@Override
 	public String toString() {
 		return "ReqRefundNotifyBean [tradeNo=" + tradeNo + ", refundStatus=" + refundStatus + ", refundId=" + refundId
 				+ ", outRefundNo=" + outRefundNo + ", totalFee=" + totalFee + ", refundFee=" + refundFee + ", clientIp="
-				+ clientIp + ", message=" + message + ", updateTime=" + updateTime + "]";
+				+ clientIp + ", message=" + message + ", rspMsg=" + rspMsg + ", updateTime=" + updateTime + "]";
 	}
+
 	
 	
 	

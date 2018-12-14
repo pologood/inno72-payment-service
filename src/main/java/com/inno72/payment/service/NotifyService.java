@@ -175,6 +175,7 @@ public class NotifyService {
 		Map<String, String> form = new HashMap<String, String>();
 
 		form.put("retCode", "0");
+		form.put("retMsg", "ok");
 		form.put("spId", billInfoBean.getSpId());
 		form.put("billId", billInfoBean.getId().toString());
 		form.put("outTradeNo", billInfoBean.getOutTradeNo());
@@ -212,10 +213,11 @@ public class NotifyService {
 		}
 
 		long currentTime = System.currentTimeMillis();
-		if (refundInfo.getStatus() == Constants.REFUNDSTATUS_SUCCESS) {
+		if (refundInfo.getStatus() == Constants.REFUNDSTATUS_SUCCESS 
+				|| refundInfo.getStatus() == Constants.REFUNDSTATUS_ERROR) {
 
 			if (refundInfo.getNotifyStatus() == Constants.COMMON_STATUS_NO) {
-				if (notifyRefundCient(reqBean.getRefundStatus(), refundInfo)) {
+				if (notifyRefundCient(reqBean.getRefundStatus(), reqBean.getRspMsg(), refundInfo)) {
 					payInfoDao.updateRefundNotifyStatus(refundInfo.getId(), Constants.COMMON_STATUS_YES, currentTime,
 							refundInfo.getUpdateTime());
 				} else {
@@ -226,7 +228,7 @@ public class NotifyService {
 			}
 		}
 		
-		if (notifyRefundCient(reqBean.getRefundStatus(), refundInfo)) {
+		if (notifyRefundCient(reqBean.getRefundStatus(), reqBean.getRspMsg(), refundInfo)) {
 			handleRefundInfo(refundInfo, billInfo, reqBean, reqBean.getRefundStatus(), Constants.COMMON_STATUS_YES, currentTime);
 			return Results.success();
 		}else {
@@ -287,7 +289,7 @@ public class NotifyService {
 
 	}
 
-	protected boolean notifyRefundCient(int ret, RefundInfoDaoBean refundInfo) {
+	protected boolean notifyRefundCient(int ret, String msg, RefundInfoDaoBean refundInfo) {
 
 
 		if (StringUtils.isBlank(refundInfo.getNotifyUrl())) {
@@ -298,6 +300,7 @@ public class NotifyService {
 
 
 		form.put("retCode", ret == Constants.REFUNDSTATUS_SUCCESS ? "0" : "-1");
+		form.put("retMsg", msg);
 		form.put("fundId", refundInfo.getId().toString());
 		form.put("spId", refundInfo.getSpId());
 		form.put("outTradeNo", refundInfo.getOutTradeNo());
