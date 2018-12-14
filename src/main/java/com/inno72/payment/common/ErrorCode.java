@@ -25,5 +25,6 @@ public class ErrorCode {
 	public static int ERR_CONNECT_UNIONPAY = 50020;
 	public static int ERR_CONNECT_WECHAT = 50021;
 	public static int ERR_CONNECT_ALIPAY = 50022;
+	public static int ERR_CANT_REFUND = 50023;
 	
 }

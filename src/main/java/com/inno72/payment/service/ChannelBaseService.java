@@ -87,14 +87,14 @@ public abstract class ChannelBaseService implements ChannelService{
 		
 		if(billInfo.getIsRefund() == 1) {
 			logger.warn("bill had refound");
-			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "amount"));
+			throw new TransException(ErrorCode.ERR_CANT_REFUND, Message.getMessage(ErrorCode.ERR_CANT_REFUND));
 		}
 		
 		RefundInfoDaoBean refundInfoDaoBean = payInfoDao.getRefundInfoBySpidOutRefundNo(reqBean.getSpId(), reqBean.getOutRefundNo());
 		
 		if(refundInfoDaoBean != null) {
 			logger.warn("outRefundNo had existed");
-			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "outRefundNo"));
+			throw new TransException(ErrorCode.ERR_CANT_REFUND, Message.getMessage(ErrorCode.ERR_CANT_REFUND));
 		}
 		
 		if(reqBean.getAmount() != billInfo.getTotalFee()) {
