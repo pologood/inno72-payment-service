@@ -302,7 +302,7 @@ public class NotifyService {
 
 		form.put("retCode", ret == Constants.REFUNDSTATUS_SUCCESS ? "0" : "-1");
 		form.put("retMsg", msg);
-		form.put("fundId", refundInfo.getId().toString());
+		form.put("refundId", refundInfo.getId().toString());
 		form.put("spId", refundInfo.getSpId());
 		form.put("outTradeNo", refundInfo.getOutTradeNo());
 		form.put("outRefundNo", refundInfo.getOutRefundNo());

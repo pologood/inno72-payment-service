@@ -300,6 +300,7 @@ public class ChannelWechatService extends ChannelBaseService {
 			rspContent.setBillId(billInfo.getId().toString());
 			rspContent.setSpId(billInfo.getSpId());
 			rspContent.setOutTradeNo(billInfo.getOutTradeNo());
+			rspContent.setRefundId(Long.toString(refundBillId));
 			rspContent.setOutRefundNo(reqBean.getOutRefundNo());
 			rspContent.setRefundFee(reqBean.getAmount());
 			rspContent.setStatus(Constants.REFUNDSTATUS_APPLY);

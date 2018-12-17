@@ -10,6 +10,8 @@ public class RspRefundBillBean {
 	
 	private String outRefundNo;
 	
+	private String refundId;
+	
 	private Integer status;
 	
 	private Long refundFee;
@@ -62,11 +64,22 @@ public class RspRefundBillBean {
 		this.outRefundNo = outRefundNo;
 	}
 
+	public String getRefundId() {
+		return refundId;
+	}
+
+	public void setRefundId(String refundId) {
+		this.refundId = refundId;
+	}
+
 	@Override
 	public String toString() {
 		return "RspRefundBillBean [spId=" + spId + ", billId=" + billId + ", outTradeNo=" + outTradeNo
-				+ ", outRefundNo=" + outRefundNo + ", status=" + status + ", refundFee=" + refundFee + "]";
+				+ ", outRefundNo=" + outRefundNo + ", refundId=" + refundId + ", status=" + status + ", refundFee="
+				+ refundFee + "]";
 	}
+
+	
 
 	
 	

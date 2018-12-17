@@ -259,6 +259,7 @@ public class ChannelAlipayService extends ChannelBaseService {
 		rspContent.setSpId(billInfo.getSpId());
 		rspContent.setOutTradeNo(billInfo.getOutTradeNo());
 		rspContent.setOutRefundNo(reqBean.getOutRefundNo());
+		rspContent.setRefundId(Long.toString(refundBillId));
 		rspContent.setRefundFee(reqBean.getAmount());
 		rspContent.setStatus(Constants.REFUNDSTATUS_SUCCESS);
 		
