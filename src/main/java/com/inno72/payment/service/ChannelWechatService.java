@@ -251,8 +251,7 @@ public class ChannelWechatService extends ChannelBaseService {
 				logger.warn("wechat refund error ResultCode:" + wechatRet.get("result_code") + " ReturnCode:"
 						+wechatRet.get("return_code") + " ErrCode:" + wechatRet.get("err_code")
 						+ " ErrDes:" + wechatRet.get("err_code_des"));
-				throw new TransException(ErrorCode.ERR_CONNECT_WECHAT,
-						Message.getMessage(ErrorCode.ERR_CONNECT_WECHAT));
+				throw new TransException(ErrorCode.ERR_CONNECT_WECHAT, wechatRet.get("err_code_des"));
 			}
 			
 			PaymentLogDaoBean logDaoBean = new PaymentLogDaoBean();
