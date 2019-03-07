@@ -54,9 +54,12 @@ public class NotifyController {
 
 	private static final String WECHAT_RSP_SUCCESS = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 
-	@RequestMapping("/alipay/scan")
-	public void notifyAlipayScan(HttpServletRequest req, HttpServletResponse rsp) {
 
+
+	@RequestMapping("/alipay-scan")
+	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp) {
+
+		System.out.println("into alipayScan ... begin ");
 		Enumeration<String> parameterNames = req.getParameterNames();
 
 		while (parameterNames.hasMoreElements()) {
