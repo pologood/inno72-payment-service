@@ -61,14 +61,29 @@ public class NotifyController {
 
 
 	@RequestMapping("/alipay-scan")
-	public void alipayScan(@RequestBody(required = false) Map<String, String> params, HttpServletRequest req, HttpServletResponse rsp)
+	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp)
 			throws AlipayApiException {
 
 		System.out.println("into alipayScan ... begin ");
 
+		Map<String, String> params = new HashMap<>();
+
+		Enumeration<String> parameterNames = req.getParameterNames();
+
+		while (parameterNames.hasMoreElements()) {
+			String paramName = parameterNames.nextElement();
+			String[] parameterValues = req.getParameterValues(paramName);
+			if (parameterValues.length == 1) {
+				String parameterValue = parameterValues[0];
+				if (parameterValue.length() != 0) {
+					params.put(paramName, parameterValue);
+				}
+			}
+		}
+
 		SortedMap<String, String> allParams = getAllParams(req, params);
 		allParams.remove("sign_type");
-		allParams.remove("sign");
+		// allParams.remove("sign");
 
 		System.out.println(allParams);
 
@@ -77,18 +92,6 @@ public class NotifyController {
 
 		System.out.println("rsa2 is " + rsa2);
 
-//		Enumeration<String> parameterNames = req.getParameterNames();
-//
-//		while (parameterNames.hasMoreElements()) {
-//			String paramName = parameterNames.nextElement();
-//			String[] parameterValues = req.getParameterValues(paramName);
-//			if (parameterValues.length == 1) {
-//				String parameterValue = parameterValues[0];
-//				if (parameterValue.length() != 0) {
-//					System.out.println(paramName + " : " + parameterValue);
-//				}
-//			}
-//		}
 
 	}
 
