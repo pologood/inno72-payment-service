@@ -54,6 +54,24 @@ public class NotifyController {
 
 	private static final String WECHAT_RSP_SUCCESS = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 
+	@RequestMapping("/alipay/scan")
+	public void notifyAlipayScan(HttpServletRequest req, HttpServletResponse rsp) {
+
+		Enumeration<String> parameterNames = req.getParameterNames();
+
+		while (parameterNames.hasMoreElements()) {
+			String paramName = parameterNames.nextElement();
+			String[] parameterValues = req.getParameterValues(paramName);
+			if (parameterValues.length == 1) {
+				String parameterValue = parameterValues[0];
+				if (parameterValue.length() != 0) {
+					System.out.println(parameterValue);
+				}
+			}
+		}
+
+	}
+
 	@RequestMapping("/alipay/{spId}")
 	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp)
 			throws IOException {
