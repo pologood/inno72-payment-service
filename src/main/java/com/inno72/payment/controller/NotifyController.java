@@ -81,7 +81,7 @@ public class NotifyController {
 			}
 		}
 
-		SortedMap<String, String> allParams = getAllParams(req, params);
+		SortedMap<String, String> allParams = getAllParams(params);
 		allParams.remove("sign_type");
 		// allParams.remove("sign");
 
@@ -320,16 +320,10 @@ public class NotifyController {
 	}
 
 	//从请求中获取所有参数
-	public static SortedMap<String, String> getAllParams(HttpServletRequest request, Map<String, String> postParams) {
+	public static SortedMap<String, String> getAllParams(Map<String, String> urlParams) {
 		SortedMap<String, String> result = new TreeMap<>();
-		Map<String, String> urlParams = getUrlParams(request);
 		for (Map.Entry entry : urlParams.entrySet()) {
 			result.put((String) entry.getKey(), (String) entry.getValue());
-		}
-		if (postParams != null) {
-			for (Map.Entry entry : postParams.entrySet()) {
-				result.put((String) entry.getKey(), (String) entry.getValue());
-			}
 		}
 		return result;
 	}
