@@ -68,7 +68,7 @@ public class NotifyController {
 			if (parameterValues.length == 1) {
 				String parameterValue = parameterValues[0];
 				if (parameterValue.length() != 0) {
-					System.out.println(parameterValue);
+					System.out.println(paramName + " : " + parameterValue);
 				}
 			}
 		}
