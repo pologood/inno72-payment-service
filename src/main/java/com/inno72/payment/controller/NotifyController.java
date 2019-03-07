@@ -3,21 +3,25 @@ package com.inno72.payment.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.inno72.payment.config.AlipayConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
@@ -57,21 +61,34 @@ public class NotifyController {
 
 
 	@RequestMapping("/alipay-scan")
-	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp) {
+	public void alipayScan(@RequestBody(required = false) Map<String, String> params, HttpServletRequest req, HttpServletResponse rsp)
+			throws AlipayApiException {
 
 		System.out.println("into alipayScan ... begin ");
-		Enumeration<String> parameterNames = req.getParameterNames();
 
-		while (parameterNames.hasMoreElements()) {
-			String paramName = parameterNames.nextElement();
-			String[] parameterValues = req.getParameterValues(paramName);
-			if (parameterValues.length == 1) {
-				String parameterValue = parameterValues[0];
-				if (parameterValue.length() != 0) {
-					System.out.println(paramName + " : " + parameterValue);
-				}
-			}
-		}
+		SortedMap<String, String> allParams = getAllParams(req, params);
+		allParams.remove("sign_type");
+		allParams.remove("sign");
+
+		System.out.println(allParams);
+
+		boolean rsa2 = AlipaySignature
+				.rsaCheckV1(allParams, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
+
+		System.out.println("rsa2 is " + rsa2);
+
+//		Enumeration<String> parameterNames = req.getParameterNames();
+//
+//		while (parameterNames.hasMoreElements()) {
+//			String paramName = parameterNames.nextElement();
+//			String[] parameterValues = req.getParameterValues(paramName);
+//			if (parameterValues.length == 1) {
+//				String parameterValue = parameterValues[0];
+//				if (parameterValue.length() != 0) {
+//					System.out.println(paramName + " : " + parameterValue);
+//				}
+//			}
+//		}
 
 	}
 
@@ -297,5 +314,36 @@ public class NotifyController {
 			return;
 		}
 
+	}
+
+	//从请求中获取所有参数
+	public static SortedMap<String, String> getAllParams(HttpServletRequest request, Map<String, String> postParams) {
+		SortedMap<String, String> result = new TreeMap<>();
+		Map<String, String> urlParams = getUrlParams(request);
+		for (Map.Entry entry : urlParams.entrySet()) {
+			result.put((String) entry.getKey(), (String) entry.getValue());
+		}
+		if (postParams != null) {
+			for (Map.Entry entry : postParams.entrySet()) {
+				result.put((String) entry.getKey(), (String) entry.getValue());
+			}
+		}
+		return result;
+	}
+
+	public static Map<String, String> getUrlParams(HttpServletRequest request) {
+		String param = "";
+		try {
+			param = URLDecoder.decode(request.getQueryString(), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		Map<String, String> result = new HashMap<>();
+		String[] params = param.split("&");
+		for (String s : params) {
+			Integer index = s.indexOf("=");
+			result.put(s.substring(0, index), s.substring(index + 1));
+		}
+		return result;
 	}
 }
