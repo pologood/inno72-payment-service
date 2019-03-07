@@ -61,10 +61,9 @@ public class NotifyController {
 
 
 	@RequestMapping("/alipay-scan")
-	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp)
-			throws AlipayApiException {
+	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp) {
 
-		System.out.println("into alipayScan ... begin ");
+		logger.info("alipayScan start");
 
 		Map<String, String> params = new HashMap<>();
 
@@ -83,16 +82,19 @@ public class NotifyController {
 
 		SortedMap<String, String> allParams = getAllParams(params);
 		allParams.remove("sign_type");
+		allParams.put("test", "gr");
 		// allParams.remove("sign");
 
-		System.out.println(allParams);
+		logger.info("allParams is {}", allParams);
 
-		boolean rsa2 = AlipaySignature
-				.rsaCheckV1(allParams, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
+		try {
+			boolean check = AlipaySignature
+					.rsaCheckV1(allParams, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
 
-		System.out.println("rsa2 is " + rsa2);
-
-
+			logger.info("rsa2 is {}", check);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 	@RequestMapping("/alipay/{spId}")
