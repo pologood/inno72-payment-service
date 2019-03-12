@@ -98,6 +98,9 @@ public class ChannelAlipayService extends ChannelBaseService {
 			params.put("total_amount", new BigDecimal(reqBean.getTotalFee()).divide(new BigDecimal(100)).doubleValue());
 			params.put("subject", reqBean.getSubject());
 			params.put("body", reqBean.getRemark());
+			if (StringUtils.isNotEmpty(reqBean.getTerminalId())) {
+				params.put("terminal_id", reqBean.getTerminalId());
+			}
 			if (reqBean.getTransTimeout() != null) {
 				params.put("timeout_express", String.format("%dm", reqBean.getTransTimeout().intValue()));
 			}

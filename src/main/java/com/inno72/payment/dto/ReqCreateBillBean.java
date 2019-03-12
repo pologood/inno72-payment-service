@@ -36,6 +36,9 @@ public class ReqCreateBillBean {
 	
 	private String sign;
 
+	// 机器code
+	private String terminalId;
+
 	public String getSpId() {
 		return spId;
 	}
@@ -168,22 +171,25 @@ public class ReqCreateBillBean {
 		return sign;
 	}
 
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
+
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
 
 	@Override
 	public String toString() {
-		return "ReqCreateBillBean [spId=" + spId + ", subject=" + subject + ", outTradeNo=" + outTradeNo + ", totalFee="
-				+ totalFee + ", returnUrl=" + returnUrl + ", merchantUrl=" + merchantUrl + ", notifyUrl=" + notifyUrl
-				+ ", type=" + type + ", terminalType=" + terminalType + ", remark=" + remark + ", transTimeout="
-				+ transTimeout + ", qrTimeout=" + qrTimeout + ", unitPrice=" + unitPrice + ", quantity=" + quantity
-				+ ", clientIp=" + clientIp + ", extra=" + extra + ", sign=" + sign + "]";
+		return "ReqCreateBillBean{" + "spId='" + spId + '\'' + ", subject='" + subject + '\'' + ", outTradeNo='"
+				+ outTradeNo + '\'' + ", totalFee=" + totalFee + ", returnUrl='" + returnUrl + '\'' + ", merchantUrl='"
+				+ merchantUrl + '\'' + ", notifyUrl='" + notifyUrl + '\'' + ", type=" + type + ", terminalType="
+				+ terminalType + ", remark='" + remark + '\'' + ", transTimeout=" + transTimeout + ", qrTimeout="
+				+ qrTimeout + ", unitPrice=" + unitPrice + ", quantity=" + quantity + ", clientIp='" + clientIp + '\''
+				+ ", extra='" + extra + '\'' + ", sign='" + sign + '\'' + ", terminalId='" + terminalId + '\'' + '}';
 	}
-
-	
-
-	
-	
-	
 }

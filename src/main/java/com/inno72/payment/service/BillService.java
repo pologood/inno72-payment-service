@@ -39,7 +39,7 @@ public class BillService {
 	
 	public ThirdPartnerInfoDaoBean getThirdPartnerInfo(String groupId, int type, int terminalType) {
 		
-		if(type == Constants.PAY_CHANNEL_ALIPAY) {
+		if(type == Constants.PAY_CHANNEL_ALIPAY || type == Constants.PAY_CHANNEL_ALIPAY_SCAN) {
 			terminalType = Constants.SOURCE_FLAG_IGNORE_PLATFORM;
 		}
 		

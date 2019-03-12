@@ -28,7 +28,8 @@ public class ChannelFactoryService {
 			
 			case Constants.PAY_CHANNEL_ALIPAY: return channelAlipayService;
 			case Constants.PAY_CHANNEL_WECHAT: return channelWechatService;
-			
+			case Constants.PAY_CHANNEL_ALIPAY_SCAN: return channelAlipayService;
+
 		}
 		
 		logger.warn("channel type do not support:" + type);

@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.inno72.payment.config.AlipayConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,43 +58,50 @@ public class NotifyController {
 	private static final String WECHAT_RSP_SUCCESS = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 
 
-
-	@RequestMapping("/alipay-scan")
-	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp) {
-
-		logger.info("alipayScan start");
-
-		Map<String, String> params = new HashMap<>();
-
-		Enumeration<String> parameterNames = req.getParameterNames();
-
-		while (parameterNames.hasMoreElements()) {
-			String paramName = parameterNames.nextElement();
-			String[] parameterValues = req.getParameterValues(paramName);
-			if (parameterValues.length == 1) {
-				String parameterValue = parameterValues[0];
-				if (parameterValue.length() != 0) {
-					params.put(paramName, parameterValue);
-				}
-			}
-		}
-
-		SortedMap<String, String> allParams = getAllParams(params);
-		allParams.remove("sign_type");
-		allParams.put("test", "gr");
-		// allParams.remove("sign");
-
-		logger.info("allParams is {}", allParams);
-
-		try {
-			boolean check = AlipaySignature
-					.rsaCheckV1(allParams, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
-
-			logger.info("rsa2 is {}", check);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-	}
+//	@RequestMapping("/alipay-scan")
+//	public void alipayScan(HttpServletRequest req, HttpServletResponse rsp) {
+//
+//		logger.info("alipayScan start");
+//
+//		Map<String, String> params = new HashMap<>();
+//
+//		Enumeration<String> parameterNames = req.getParameterNames();
+//
+//		while (parameterNames.hasMoreElements()) {
+//			String paramName = parameterNames.nextElement();
+//			String[] parameterValues = req.getParameterValues(paramName);
+//			if (parameterValues.length == 1) {
+//				String parameterValue = parameterValues[0];
+//				if (parameterValue.length() != 0) {
+//					params.put(paramName, parameterValue);
+//				}
+//			}
+//		}
+//
+//		SortedMap<String, String> allParams = getAllParams(params);
+//		allParams.remove("sign_type");
+//
+//		logger.info("allParams is {}", allParams);
+//
+//		try {
+//			boolean check = AlipaySignature
+//					.rsaCheckV1(allParams, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET, "RSA2");
+//
+//			logger.info("rsa2 is {}", check);
+//
+//			if (check) {
+//				String outTradeNo = allParams.get("out_trade_no");
+//				String totalAmount = allParams.get("total_amount");
+//				String sellerId = allParams.get("seller_id");
+//				logger.info("out_trade_no is {}, total_amount is {}, seller_id is {}", outTradeNo, totalAmount, sellerId);
+//				// 校验 回调参数
+//				// todo 通知业务服务器
+//			}
+//
+//		} catch (Exception e) {
+//			logger.error(e.getMessage());
+//		}
+//	}
 
 	@RequestMapping("/alipay/{spId}")
 	public void notifyFromAlipay(@PathVariable String spId, HttpServletRequest req, HttpServletResponse rsp)

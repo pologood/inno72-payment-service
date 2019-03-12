@@ -36,7 +36,8 @@ public class Constants {
 		
 	public static final int PAY_CHANNEL_ALIPAY = 1;
 	public static final int PAY_CHANNEL_WECHAT = 2;
-	
+	public static final int PAY_CHANNEL_ALIPAY_SCAN = 3; // 蚂蚁金服当面付 扫码支付
+
 	public static final int SOURCE_FLAG_IGNORE_PLATFORM = 0;
 	public static final int SOURCE_FLAG_QRCODE = 1;
 	public static final int SOURCE_FLAG_WAP = 2;
