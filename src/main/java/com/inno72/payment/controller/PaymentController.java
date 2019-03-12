@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +45,9 @@ public class PaymentController {
 	
 	@Autowired
 	private IdWorker idWorker;
+
+	@Value("${env}")
+	private String env;
 	
 	
 	@RequestMapping(value="/queryBillInfo")
@@ -69,20 +73,22 @@ public class PaymentController {
 		if(spInfo == null) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spinfo not found"));
 		}
-		
-//		try {
-//
-//			String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
-//
-//			if(!reqBean.getSign().equalsIgnoreCase(sign)) {
-//				throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
-//			}
-//
-//		} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
-//			logger.warn(e.getMessage(), e);
-//			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
-//		}
-		
+
+		if (!env.equals("test")) {
+			try {
+
+				String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
+
+				if(!reqBean.getSign().equalsIgnoreCase(sign)) {
+					throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
+				}
+
+			} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
+				logger.warn(e.getMessage(), e);
+				throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
+			}
+		}
+
 		ThirdPartnerInfoDaoBean thirdPartnerInfo = billService.getThirdPartnerInfo(spInfo.getThirdpartnerGroupId(), reqBean.getType(), reqBean.getTerminalType());
 		if(thirdPartnerInfo == null) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "thirdPartnerInfo not found"));
@@ -95,7 +101,7 @@ public class PaymentController {
 	
 	@RequestMapping(value="/refund")
 	public Result<RspRefundBillBean> refundBill(ReqRefundBillBean reqBean, HttpServletRequest req) throws TransException {
-		
+
 		if(StringUtils.isBlank(reqBean.getSpId())) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spId"));
 		}
@@ -113,20 +119,22 @@ public class PaymentController {
 		if(spInfo == null) {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spinfo not found"));
 		}
-		
-		try {
-			
-			String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
-			
-			if(!reqBean.getSign().equalsIgnoreCase(sign)) {
+
+		if (!env.equals("test")) {
+			try {
+
+				String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
+
+				if(!reqBean.getSign().equalsIgnoreCase(sign)) {
+					throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
+				}
+
+			} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
+				logger.warn(e.getMessage(), e);
 				throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
 			}
-			
-		} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
-			logger.warn(e.getMessage(), e);
-			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
 		}
-		
+
 		BillInfoDaoBean billInfo = billService.getBillInfoByOutTradeNo(reqBean.getSpId(), reqBean.getOutTradeNo());
 		
 		if(billInfo == null) {
