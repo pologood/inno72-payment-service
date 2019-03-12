@@ -70,18 +70,18 @@ public class PaymentController {
 			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "spinfo not found"));
 		}
 		
-		try {
-			
-			String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
-			
-			if(!reqBean.getSign().equalsIgnoreCase(sign)) {
-				throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
-			}
-			
-		} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
-			logger.warn(e.getMessage(), e);
-			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
-		}
+//		try {
+//
+//			String sign = Utility.makeSign(reqBean, spInfo.getSignKey());
+//
+//			if(!reqBean.getSign().equalsIgnoreCase(sign)) {
+//				throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
+//			}
+//
+//		} catch (IllegalArgumentException | IllegalAccessException | UnsupportedEncodingException e) {
+//			logger.warn(e.getMessage(), e);
+//			throw new TransException(ErrorCode.ERR_WRONG_PARAS, String.format(Message.getMessage(ErrorCode.ERR_WRONG_PARAS), "sign"));
+//		}
 		
 		ThirdPartnerInfoDaoBean thirdPartnerInfo = billService.getThirdPartnerInfo(spInfo.getThirdpartnerGroupId(), reqBean.getType(), reqBean.getTerminalType());
 		if(thirdPartnerInfo == null) {
