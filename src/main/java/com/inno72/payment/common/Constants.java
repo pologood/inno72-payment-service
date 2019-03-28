@@ -44,6 +44,7 @@ public class Constants {
 	public static final int SOURCE_FLAG_APP = 3;
 	public static final int SOURCE_FLAG_MINIAPP = 4;
 	public static final int SOURCE_FLAG_PUBLICAPP = 5;
+	public static final int SOURCE_FLAG_WECHAT_H5 = 6; // 微信H5支付
 	
 	public static final String SERVICE_CHARSET = "utf-8";
 	

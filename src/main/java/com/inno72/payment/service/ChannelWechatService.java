@@ -56,6 +56,8 @@ public class ChannelWechatService extends ChannelBaseService {
 		switch (terminalType) {
 			case Constants.SOURCE_FLAG_QRCODE:
 				return;
+			case Constants.SOURCE_FLAG_WECHAT_H5:
+				return;
 			default:
 				logger.warn("terminalType do not support:" + terminalType);
 				throw new TransException(ErrorCode.ERR_NOT_SUPPORT, Message.getMessage(ErrorCode.ERR_NOT_SUPPORT));
@@ -131,7 +133,9 @@ public class ChannelWechatService extends ChannelBaseService {
 		params.put("fee_type", "CNY");
 		params.put("total_fee", Long.toString(reqBean.getTotalFee()));
 
-		//params.put("spbill_create_ip", reqBean.getClientIp());
+		if (StringUtils.isNotEmpty(reqBean.getClientIp())) {
+			params.put("spbill_create_ip", reqBean.getClientIp());
+		}
 
 		if (reqBean.getTransTimeout() != null) {
 			params.put("time_start", dateFormat.format(new Date(currentTime)));
@@ -142,6 +146,8 @@ public class ChannelWechatService extends ChannelBaseService {
 
 		if (Constants.SOURCE_FLAG_QRCODE == reqBean.getTerminalType()) {
 			params.put("trade_type", "NATIVE");
+		} else if (Constants.SOURCE_FLAG_WECHAT_H5 == reqBean.getTerminalType()) {
+			params.put("trade_type", "MWEB");
 		}
 
 		String sign = Utility.createLinkString(params);
@@ -191,7 +197,11 @@ public class ChannelWechatService extends ChannelBaseService {
 			rspBean.getData().setBillId(Long.toString(billId));
 			rspBean.getData().setType(reqBean.getType());
 			rspBean.getData().setTerminalType(reqBean.getTerminalType());
-			rspBean.getData().setQrCode(wechatRet.get("code_url"));
+			if (Constants.SOURCE_FLAG_WECHAT_H5 == reqBean.getTerminalType()) {
+				rspBean.getData().setQrCode(wechatRet.get("mweb_url"));
+			} else {
+				rspBean.getData().setQrCode(wechatRet.get("code_url"));
+			}
 			return rspBean;
 
 		} catch (Exception e) {
